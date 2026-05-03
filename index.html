@@ -16,6 +16,7 @@
             background: var(--bg-grad);
             color: white;
             font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -23,6 +24,9 @@
             height: 100vh;
             transition: 0.5s;
             overflow: hidden;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         body.theme-grey { --bg-grad: linear-gradient(135deg, #434343 0%, #000000 100%); --accent: #888; }
@@ -30,11 +34,11 @@
         body.theme-lime { --bg-grad: linear-gradient(135deg, #0f2027 0%, #2c5364 50%, #71b280 100%); --accent: #32ff7e; }
 
         .header { margin-top: 30px; text-align: center; width: 90%; }
-        #level-text { font-size: 14px; opacity: 0.7; letter-spacing: 2px; margin-bottom: 5px; }
-        #score { font-size: 60px; font-weight: 900; margin: 5px 0; text-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+        #level-text { font-size: 14px; opacity: 0.7; letter-spacing: 2px; }
+        #score { font-size: 60px; margin: 5px 0; text-shadow: 0 10px 20px rgba(0,0,0,0.4); }
         
-        .progress-container { width: 80%; background: rgba(255,255,255,0.1); border-radius: 50px; height: 14px; margin: 0 auto 40px; overflow: hidden; }
-        #progress-bar { width: 0%; height: 100%; background: var(--accent); transition: 0.4s; box-shadow: 0 0 15px var(--accent); }
+        .progress-container { width: 80%; background: rgba(255,255,255,0.1); border-radius: 50px; height: 14px; margin: 10px auto 30px; overflow: hidden; }
+        #progress-bar { width: 0%; height: 100%; background: var(--accent); transition: 0.2s; }
 
         #coin {
             width: 240px;
@@ -47,11 +51,11 @@
             justify-content: center;
             font-size: 110px;
             cursor: pointer;
-            transition: 0.1s;
-            user-select: none;
+            transition: transform 0.05s;
             box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            touch-action: manipulation;
         }
-        #coin:active { transform: scale(0.94); }
+        #coin:active { transform: scale(0.92); }
 
         .leaderboard {
             margin-top: auto;
@@ -61,7 +65,6 @@
             padding: 25px;
             box-sizing: border-box;
             backdrop-filter: blur(15px);
-            border-top: 1px solid rgba(255,255,255,0.1);
         }
         .leader-item {
             display: flex;
@@ -70,11 +73,11 @@
             margin: 8px 0;
             padding: 15px 25px;
             border-radius: 20px;
-            font-size: 16px;
+            font-size: 14px;
         }
-        .my-score { border: 2px solid var(--accent); background: rgba(255,255,255,0.1); }
+        .my-score { border: 2px solid var(--accent); }
 
-        .theme-switcher { position: absolute; top: 20px; right: 20px; display: flex; gap: 12px; }
+        .theme-switcher { position: absolute; top: 20px; right: 20px; display: flex; gap: 10px; }
         .theme-dot { width: 30px; height: 30px; border-radius: 10px; border: 2px solid white; cursor: pointer; }
 
         .btn-ad {
@@ -86,8 +89,7 @@
             border: none;
             font-family: 'Montserrat', sans-serif;
             font-weight: 900;
-            font-size: 16px;
-            letter-spacing: 1px;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -107,14 +109,15 @@
         </div>
     </div>
 
-    <div id="coin">⭐</div>
+    <div id="coin" onclick="clickStar()">⭐</div>
 
     <button class="btn-ad" onclick="showAd()">📺 BOOST +1000</button>
 
     <div class="leaderboard">
-        <div style="margin-bottom: 15px; font-size: 12px; opacity: 0.5; letter-spacing: 2px;">TOP PLAYERS</div>
-        <div class="leader-item"><span>1. RICH_GUY</span><span>2,500,000</span></div>
-        <div class="leader-item my-score"><span>3. YOU (aqt)</span><span id="player-score">0</span></div>
+        <div style="margin-bottom: 10px; font-size: 10px; opacity: 0.5;">TOP PLAYERS</div>
+        <div class="leader-item"><span>1. КИТ_ИНВЕСТОР</span><span>12,400</span></div>
+        <div class="leader-item my-score"><span>2. ТЫ (aqt)</span><span id="player-score">0</span></div>
+        <div class="leader-item"><span>3. НОВИЧОК_99</span><span>50</span></div>
     </div>
 
     <script>
@@ -122,15 +125,14 @@
         let nextLevel = 100;
         let level = 1;
 
-        // ТВОЙ ID УЖЕ ТУТ:
         const AdController = window.Adsgram.init({ blockId: "29361" });
 
         function setTheme(t) { document.body.className = 'theme-' + t; }
 
-        document.getElementById('coin').onclick = () => {
+        function clickStar() {
             balance += 1;
             updateUI();
-        };
+        }
 
         function updateUI() {
             document.getElementById('score').innerText = balance.toLocaleString();
@@ -154,7 +156,7 @@
                     updateUI();
                 }
             } catch (e) {
-                alert("Реклама подгружается или статус Pending в Adsgram.");
+                alert("Реклама загружается..");
             }
         }
     </script>
