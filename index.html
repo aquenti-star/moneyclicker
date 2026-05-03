@@ -3,108 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Star Clicker Pro</title>
-    <script src="https://adsgram.ai/sdk.js"></script>
+    <title>Star Clicker Elite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+    <script src="https://sad.adsgram.ai/js/adsgram-ad-sdk.js"></script>
     <style>
-        :root { --main-bg: #0f172a; --accent: #8b5cf6; --gold: #f59e0b; }
-        body { background: var(--main-bg); color: white; font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; height: 100vh; overflow: hidden; }
+        :root {
+            --bg-grad: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+            --accent: #9d50bb;
+        }
         
-        .header { margin-top: 20px; text-align: center; }
-        .balance { font-size: 42px; font-weight: 800; color: var(--gold); text-shadow: 0 0 20px rgba(245, 158, 11, 0.3); }
+        body {
+            background: var(--bg-grad);
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            height: 100vh;
+            transition: 0.5s;
+            overflow: hidden;
+        }
+
+        body.theme-grey { --bg-grad: linear-gradient(135deg, #434343 0%, #000000 100%); --accent: #888; }
+        body.theme-purple { --bg-grad: linear-gradient(135deg, #6e48aa 0%, #9d50bb 100%); --accent: #fff; }
+        body.theme-lime { --bg-grad: linear-gradient(135deg, #0f2027 0%, #2c5364 50%, #71b280 100%); --accent: #32ff7e; }
+
+        .header { margin-top: 30px; text-align: center; width: 90%; }
+        #level-text { font-size: 14px; opacity: 0.7; letter-spacing: 2px; margin-bottom: 5px; }
+        #score { font-size: 60px; font-weight: 900; margin: 5px 0; text-shadow: 0 10px 20px rgba(0,0,0,0.4); }
         
-        .click-area { position: relative; margin: auto 0; }
-        .star-main { width: 220px; height: 220px; background: radial-gradient(circle, var(--accent), #4c1d95); border-radius: 50%; border: 8px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 80px; transition: transform 0.1s; -webkit-tap-highlight-color: transparent; box-shadow: 0 0 50px rgba(139, 92, 246, 0.4); }
-        .star-main:active { transform: scale(0.9); }
+        .progress-container { width: 80%; background: rgba(255,255,255,0.1); border-radius: 50px; height: 14px; margin: 0 auto 40px; overflow: hidden; }
+        #progress-bar { width: 0%; height: 100%; background: var(--accent); transition: 0.4s; box-shadow: 0 0 15px var(--accent); }
 
-        .stats-container { width: 90%; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; margin-bottom: 20px; }
-        .progress-bar { width: 100%; height: 10px; background: #1e293b; border-radius: 5px; margin-top: 10px; overflow: hidden; }
-        .progress-fill { width: 0%; height: 100%; background: var(--accent); transition: width 0.3s; }
+        #coin {
+            width: 240px;
+            height: 240px;
+            background: rgba(255,255,255,0.03);
+            border: 10px solid rgba(255,255,255,0.05);
+            border-radius: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 110px;
+            cursor: pointer;
+            transition: 0.1s;
+            user-select: none;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+        #coin:active { transform: scale(0.94); }
 
-        .ad-btn { width: 90%; background: #1e293b; color: #475569; padding: 18px; border-radius: 18px; border: 2px solid #334155; font-size: 18px; font-weight: 700; cursor: not-allowed; margin-bottom: 30px; transition: 0.3s; }
-        .ad-btn.ready { background: linear-gradient(90deg, #7c3aed, #db2777); color: white; border: none; cursor: pointer; box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3); }
+        .leaderboard {
+            margin-top: auto;
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border-radius: 40px 40px 0 0;
+            padding: 25px;
+            box-sizing: border-box;
+            backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .leader-item {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(255,255,255,0.05);
+            margin: 8px 0;
+            padding: 15px 25px;
+            border-radius: 20px;
+            font-size: 16px;
+        }
+        .my-score { border: 2px solid var(--accent); background: rgba(255,255,255,0.1); }
+
+        .theme-switcher { position: absolute; top: 20px; right: 20px; display: flex; gap: 12px; }
+        .theme-dot { width: 30px; height: 30px; border-radius: 10px; border: 2px solid white; cursor: pointer; }
+
+        .btn-ad {
+            margin: 25px 0;
+            padding: 18px 45px;
+            background: #fff;
+            color: #000;
+            border-radius: 25px;
+            border: none;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 16px;
+            letter-spacing: 1px;
+        }
     </style>
 </head>
-<body>
+<body class="theme-purple">
+
+    <div class="theme-switcher">
+        <div class="theme-dot" style="background: #434343;" onclick="setTheme('grey')"></div>
+        <div class="theme-dot" style="background: #9d50bb;" onclick="setTheme('purple')"></div>
+        <div class="theme-dot" style="background: #71b280;" onclick="setTheme('lime')"></div>
+    </div>
 
     <div class="header">
-        <div class="balance" id="score">0</div>
-        <div style="color: #94a3b8;">монет собрано</div>
-    </div>
-
-    <div class="click-area">
-        <div class="star-main" id="clicker">⭐</div>
-    </div>
-
-    <div class="stats-container">
-        <div style="display: flex; justify-content: space-between; font-size: 14px;">
-            <span>Уровень 1</span>
-            <span id="progressText">0/1000</span>
+        <div id="level-text">LEVEL 1</div>
+        <div id="score">0</div>
+        <div class="progress-container">
+            <div id="progress-bar"></div>
         </div>
-        <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
     </div>
 
-    <button id="adBtn" class="ad-btn" disabled>Загрузка бонуса...</button>
+    <div id="coin">⭐</div>
+
+    <button class="btn-ad" onclick="showAd()">📺 BOOST +1000</button>
+
+    <div class="leaderboard">
+        <div style="margin-bottom: 15px; font-size: 12px; opacity: 0.5; letter-spacing: 2px;">TOP PLAYERS</div>
+        <div class="leader-item"><span>1. RICH_GUY</span><span>2,500,000</span></div>
+        <div class="leader-item my-score"><span>3. YOU (aqt)</span><span id="player-score">0</span></div>
+    </div>
 
     <script>
-        let count = 0;
-        const scoreEl = document.getElementById('score');
-        const fillEl = document.getElementById('fill');
-        const progressText = document.getElementById('progressText');
-        const adBtn = document.getElementById('adBtn');
+        let balance = 0;
+        let nextLevel = 100;
+        let level = 1;
 
-        // Логика клика
-        document.getElementById('clicker').onclick = (e) => {
-            count += 1;
+        // ТВОЙ ID УЖЕ ТУТ:
+        const AdController = window.Adsgram.init({ blockId: "29361" });
+
+        function setTheme(t) { document.body.className = 'theme-' + t; }
+
+        document.getElementById('coin').onclick = () => {
+            balance += 1;
             updateUI();
-            createParticle(e.clientX, e.clientY);
         };
 
         function updateUI() {
-            scoreEl.innerText = count.toLocaleString();
-            let progress = (count % 1000) / 10;
-            fillEl.style.width = progress + "%";
-            progressText.innerText = (count % 1000) + "/1000";
-        }
-
-        // Эффект вылетающих цифр
-        function createParticle(x, y) {
-            const p = document.createElement('div');
-            p.innerText = "+1";
-            p.style.position = 'fixed';
-            p.style.left = x + 'px';
-            p.style.top = y + 'px';
-            p.style.color = '#ffca28';
-            p.style.fontWeight = 'bold';
-            p.style.pointerEvents = 'none';
-            document.body.appendChild(p);
+            document.getElementById('score').innerText = balance.toLocaleString();
+            document.getElementById('player-score').innerText = balance.toLocaleString();
             
-            p.animate([{ transform: 'translateY(0)', opacity: 1 }, { transform: 'translateY(-100px)', opacity: 0 }], { duration: 1000 });
-            setTimeout(() => p.remove(), 1000);
+            if (balance >= nextLevel) {
+                level++;
+                nextLevel *= 2;
+                document.getElementById('level-text').innerText = "LEVEL " + level;
+            }
+            
+            let prog = (balance / nextLevel) * 100;
+            document.getElementById('progress-bar').style.width = prog + "%";
         }
 
-        // Adsgram
-        const AdController = window.Adsgram.init({ blockId: "29335" });
-
-        function loadAd() {
-            AdController.load().then(() => {
-                adBtn.innerText = "📺 ПОЛУЧИТЬ БОНУС +500";
-                adBtn.disabled = false;
-                adBtn.classList.add('ready');
-            }).catch(() => setTimeout(loadAd, 10000));
+        async function showAd() {
+            try {
+                const result = await AdController.show();
+                if (result.done) {
+                    balance += 1000;
+                    updateUI();
+                }
+            } catch (e) {
+                alert("Реклама подгружается или статус Pending в Adsgram.");
+            }
         }
-
-        loadAd();
-
-        adBtn.onclick = () => {
-            AdController.show().then(() => {
-                count += 500;
-                updateUI();
-                adBtn.innerText = "Загрузка...";
-                adBtn.disabled = true;
-                adBtn.classList.remove('ready');
-                loadAd();
-            }).catch(() => loadAd());
-        };
     </script>
 </body>
 </html>
