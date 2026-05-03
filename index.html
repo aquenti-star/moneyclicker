@@ -7,91 +7,22 @@
     <script src="https://adsgram.ai/sdk.js"></script>
     <style>
         body { background: #000; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; }
-        
-        /* Твоя фиолетовая кнопка с градиентом */
-        .grad-border {
-            padding: 3px;
-            background: linear-gradient(45deg, #8a2be2, #4b0082, #9400d3);
-            border-radius: 16px;
-        }
-        #adBtn {
-            background: #1a002e;
-            color: #fff;
-            padding: 18px 45px;
-            border: none;
-            border-radius: 14px;
-            font-size: 22px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        #adBtn:active { transform: scale(0.96); opacity: 0.8; }
+        .grad-border { padding: 3px; background: linear-gradient(45deg, #8a2be2, #4b0082, #9400d3); border-radius: 16px; margin-top: 10px; }
+        #adBtn { background: #1a002e; color: #fff; padding: 18px 45px; border: none; border-radius: 14px; font-size: 22px; font-weight: bold; cursor: pointer; }
+        #adBtn:active { transform: scale(0.96); }
     </style>
 </head>
 <body>
-
-    <h1 style="margin-bottom: 25px; color: #8a2be2;">Money Clicker</h1>
-    
+    <h1 style="color: #8a2be2;">Money Clicker</h1>
     <div class="grad-border">
         <button id="adBtn">СМОТРЕТЬ</button>
     </div>
-
     <script>
-        // Твой актуальный ID
-        const blockId = "29335";
-        const AdController = window.Adsgram.init({ blockId: blockId });
-
-        document.getElementById('adBtn').onclick = () => {
-            // Сразу уведомляем, что процесс пошел
-            console.log("Запрос рекламы...");
-            
-            AdController.show().then((result) => {
-                alert("Успех! +10 монет.");
-            }).catch((result) => {
-                // Если реклама не загрузилась или была закрыта
-                alert("Реклама не готова или закрыта. Попробуй через пару минут. Ошибка: " + (result.description || "Unknown"));
-            });
-        };
-    </script>
-</body>
-</html>
-            font-weight: bold;
-            cursor: pointer;
-            outline: none;
-            transition: transform 0.1s;
-        }
-
-        #adBtn:active {
-            transform: scale(0.95);
-            background-color: #3d0066;
-        }
-    </style>
-</head>
-<body>
-
-    <h1 style="margin-bottom: 30px;">Money Clicker</h1>
-
-    <div class="btn-container">
-        <button id="adBtn">СМОТРЕТЬ</button>
-    </div>
-
-    <script>
-        // Инициализация рекламы с твоим ID
         const AdController = window.Adsgram.init({ blockId: "29335" });
-
         document.getElementById('adBtn').onclick = () => {
-            console.log("Кнопка нажата, запуск рекламы...");
-            
             AdController.show()
-                .then((result) => {
-                    // Код при успешном просмотре
-                    alert("Успешно! +10 монет на баланс.");
-                })
-                .catch((result) => {
-                    // Код при ошибке или если реклама не готова
-                    console.error("Ошибка Adsgram:", result);
-                    alert("Реклама пока не загрузилась. Попробуй через пару минут!");
-                });
+                .then(() => { alert("Успех! +10 монет."); })
+                .catch((err) => { alert("Реклама загружается, подожди немного..."); });
         };
     </script>
 </body>
