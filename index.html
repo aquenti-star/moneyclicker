@@ -7,9 +7,8 @@
     <script src="https://adsgram.ai/sdk.js"></script>
     <style>
         body { background: #000; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; }
-        .grad-border { padding: 3px; background: linear-gradient(45deg, #8a2be2, #4b0082, #9400d3); border-radius: 16px; margin-top: 10px; }
+        .grad-border { padding: 3px; background: linear-gradient(45deg, #8a2be2, #4b0082, #9400d3); border-radius: 16px; }
         #adBtn { background: #1a002e; color: #fff; padding: 18px 45px; border: none; border-radius: 14px; font-size: 22px; font-weight: bold; cursor: pointer; }
-        #adBtn:active { transform: scale(0.96); }
     </style>
 </head>
 <body>
@@ -18,11 +17,15 @@
         <button id="adBtn">СМОТРЕТЬ</button>
     </div>
     <script>
-        const AdController = window.Adsgram.init({ blockId: "29335" });
         document.getElementById('adBtn').onclick = () => {
-            AdController.show()
-                .then(() => { alert("Успех! +10 монет."); })
-                .catch((err) => { alert("Реклама загружается, подожди немного..."); });
+            if (window.Adsgram) {
+                const AdController = window.Adsgram.init({ blockId: "29335" });
+                AdController.show()
+                    .then(() => { alert("Успех! +10 монет."); })
+                    .catch((err) => { alert("Adsgram: " + (err.description || "Реклама подбирается...")); });
+            } else {
+                alert("Ошибка: Скрипт не загружен.");
+            }
         };
     </script>
 </body>
