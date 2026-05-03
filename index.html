@@ -1,60 +1,109 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Money Clicker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Star Clicker Pro</title>
     <script src="https://adsgram.ai/sdk.js"></script>
     <style>
-        body { background: #000; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; }
-        .grad-border { padding: 3px; background: #333; border-radius: 16px; transition: 0.5s; }
-        .ready-border { background: linear-gradient(45deg, #8a2be2, #4b0082, #9400d3); }
-        #adBtn { background: #1a002e; color: #777; padding: 18px 45px; border: none; border-radius: 14px; font-size: 22px; font-weight: bold; cursor: not-allowed; }
-        #adBtn.ready { color: #fff; cursor: pointer; }
+        :root { --main-bg: #0f172a; --accent: #8b5cf6; --gold: #f59e0b; }
+        body { background: var(--main-bg); color: white; font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; height: 100vh; overflow: hidden; }
+        
+        .header { margin-top: 20px; text-align: center; }
+        .balance { font-size: 42px; font-weight: 800; color: var(--gold); text-shadow: 0 0 20px rgba(245, 158, 11, 0.3); }
+        
+        .click-area { position: relative; margin: auto 0; }
+        .star-main { width: 220px; height: 220px; background: radial-gradient(circle, var(--accent), #4c1d95); border-radius: 50%; border: 8px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 80px; transition: transform 0.1s; -webkit-tap-highlight-color: transparent; box-shadow: 0 0 50px rgba(139, 92, 246, 0.4); }
+        .star-main:active { transform: scale(0.9); }
+
+        .stats-container { width: 90%; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; margin-bottom: 20px; }
+        .progress-bar { width: 100%; height: 10px; background: #1e293b; border-radius: 5px; margin-top: 10px; overflow: hidden; }
+        .progress-fill { width: 0%; height: 100%; background: var(--accent); transition: width 0.3s; }
+
+        .ad-btn { width: 90%; background: #1e293b; color: #475569; padding: 18px; border-radius: 18px; border: 2px solid #334155; font-size: 18px; font-weight: 700; cursor: not-allowed; margin-bottom: 30px; transition: 0.3s; }
+        .ad-btn.ready { background: linear-gradient(90deg, #7c3aed, #db2777); color: white; border: none; cursor: pointer; box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3); }
     </style>
 </head>
 <body>
-    <h1 style="color: #8a2be2;">Money Clicker</h1>
-    <div id="border" class="grad-border">
-        <button id="adBtn" disabled>ЗАГРУЗКА...</button>
+
+    <div class="header">
+        <div class="balance" id="score">0</div>
+        <div style="color: #94a3b8;">монет собрано</div>
     </div>
 
-    <script>
-        const blockId = "29335";
-        const AdController = window.Adsgram.init({ blockId: blockId });
-        const btn = document.getElementById('adBtn');
-        const border = document.getElementById('border');
+    <div class="click-area">
+        <div class="star-main" id="clicker">⭐</div>
+    </div>
 
-        // Функция предзагрузки
-        function preloadAd() {
-            AdController.load().then(() => {
-                // Если реклама загрузилась:
-                btn.innerText = "СМОТРЕТЬ";
-                btn.disabled = false;
-                btn.classList.add('ready');
-                border.classList.add('ready-border');
-            }).catch(() => {
-                // Если не загрузилась, пробуем еще раз через 5 секунд
-                setTimeout(preloadAd, 5000);
-            });
+    <div class="stats-container">
+        <div style="display: flex; justify-content: space-between; font-size: 14px;">
+            <span>Уровень 1</span>
+            <span id="progressText">0/1000</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="fill"></div></div>
+    </div>
+
+    <button id="adBtn" class="ad-btn" disabled>Загрузка бонуса...</button>
+
+    <script>
+        let count = 0;
+        const scoreEl = document.getElementById('score');
+        const fillEl = document.getElementById('fill');
+        const progressText = document.getElementById('progressText');
+        const adBtn = document.getElementById('adBtn');
+
+        // Логика клика
+        document.getElementById('clicker').onclick = (e) => {
+            count += 1;
+            updateUI();
+            createParticle(e.clientX, e.clientY);
+        };
+
+        function updateUI() {
+            scoreEl.innerText = count.toLocaleString();
+            let progress = (count % 1000) / 10;
+            fillEl.style.width = progress + "%";
+            progressText.innerText = (count % 1000) + "/1000";
         }
 
-        // Запускаем загрузку сразу
-        preloadAd();
+        // Эффект вылетающих цифр
+        function createParticle(x, y) {
+            const p = document.createElement('div');
+            p.innerText = "+1";
+            p.style.position = 'fixed';
+            p.style.left = x + 'px';
+            p.style.top = y + 'px';
+            p.style.color = '#ffca28';
+            p.style.fontWeight = 'bold';
+            p.style.pointerEvents = 'none';
+            document.body.appendChild(p);
+            
+            p.animate([{ transform: 'translateY(0)', opacity: 1 }, { transform: 'translateY(-100px)', opacity: 0 }], { duration: 1000 });
+            setTimeout(() => p.remove(), 1000);
+        }
 
-        btn.onclick = () => {
+        // Adsgram
+        const AdController = window.Adsgram.init({ blockId: "29335" });
+
+        function loadAd() {
+            AdController.load().then(() => {
+                adBtn.innerText = "📺 ПОЛУЧИТЬ БОНУС +500";
+                adBtn.disabled = false;
+                adBtn.classList.add('ready');
+            }).catch(() => setTimeout(loadAd, 10000));
+        }
+
+        loadAd();
+
+        adBtn.onclick = () => {
             AdController.show().then(() => {
-                alert("Успех! +10 монет.");
-                // После просмотра грузим следующую
-                btn.innerText = "ЗАГРУЗКА...";
-                btn.disabled = true;
-                btn.classList.remove('ready');
-                border.classList.remove('ready-border');
-                preloadAd();
-            }).catch((err) => {
-                alert("Ошибка: " + err.description);
-                preloadAd();
-            });
+                count += 500;
+                updateUI();
+                adBtn.innerText = "Загрузка...";
+                adBtn.disabled = true;
+                adBtn.classList.remove('ready');
+                loadAd();
+            }).catch(() => loadAd());
         };
     </script>
 </body>
