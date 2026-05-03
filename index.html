@@ -7,25 +7,54 @@
     <script src="https://adsgram.ai/sdk.js"></script>
     <style>
         body { background: #000; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; }
-        .grad-border { padding: 3px; background: linear-gradient(45deg, #8a2be2, #4b0082, #9400d3); border-radius: 16px; }
-        #adBtn { background: #1a002e; color: #fff; padding: 18px 45px; border: none; border-radius: 14px; font-size: 22px; font-weight: bold; cursor: pointer; }
+        .grad-border { padding: 3px; background: #333; border-radius: 16px; transition: 0.5s; }
+        .ready-border { background: linear-gradient(45deg, #8a2be2, #4b0082, #9400d3); }
+        #adBtn { background: #1a002e; color: #777; padding: 18px 45px; border: none; border-radius: 14px; font-size: 22px; font-weight: bold; cursor: not-allowed; }
+        #adBtn.ready { color: #fff; cursor: pointer; }
     </style>
 </head>
 <body>
     <h1 style="color: #8a2be2;">Money Clicker</h1>
-    <div class="grad-border">
-        <button id="adBtn">СМОТРЕТЬ</button>
+    <div id="border" class="grad-border">
+        <button id="adBtn" disabled>ЗАГРУЗКА...</button>
     </div>
+
     <script>
-        document.getElementById('adBtn').onclick = () => {
-            if (window.Adsgram) {
-                const AdController = window.Adsgram.init({ blockId: "29335" });
-                AdController.show()
-                    .then(() => { alert("Успех! +10 монет."); })
-                    .catch((err) => { alert("Adsgram: " + (err.description || "Реклама подбирается...")); });
-            } else {
-                alert("Ошибка: Скрипт не загружен.");
-            }
+        const blockId = "29335";
+        const AdController = window.Adsgram.init({ blockId: blockId });
+        const btn = document.getElementById('adBtn');
+        const border = document.getElementById('border');
+
+        // Функция предзагрузки
+        function preloadAd() {
+            AdController.load().then(() => {
+                // Если реклама загрузилась:
+                btn.innerText = "СМОТРЕТЬ";
+                btn.disabled = false;
+                btn.classList.add('ready');
+                border.classList.add('ready-border');
+            }).catch(() => {
+                // Если не загрузилась, пробуем еще раз через 5 секунд
+                setTimeout(preloadAd, 5000);
+            });
+        }
+
+        // Запускаем загрузку сразу
+        preloadAd();
+
+        btn.onclick = () => {
+            AdController.show().then(() => {
+                alert("Успех! +10 монет.");
+                // После просмотра грузим следующую
+                btn.innerText = "ЗАГРУЗКА...";
+                btn.disabled = true;
+                btn.classList.remove('ready');
+                border.classList.remove('ready-border');
+                preloadAd();
+            }).catch((err) => {
+                alert("Ошибка: " + err.description);
+                preloadAd();
+            });
         };
     </script>
 </body>
