@@ -2,33 +2,24 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Money Clicker</title>
     <script src="https://adsgram.ai/sdk.js"></script>
 </head>
-<body style="background: #000; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif;">
+<body style="background: #000; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0;">
 
     <h1>Money Clicker</h1>
-    <h2 style="margin-bottom: 20px;">Баланс: <span id="balance">0</span> 💰</h2>
-    
-    <button id="adBtn" style="padding: 15px 30px; font-size: 18px; border-radius: 12px; border: none; background: #0088cc; color: white; cursor: pointer;">
-        СМОТРЕТЬ РЕКЛАМУ (+10 монет)
+    <button id="adBtn" style="padding: 20px; font-size: 20px; border-radius: 15px; background: #0088cc; color: #fff; border: none;">
+        СМОТРЕТЬ РЕКЛАМУ
     </button>
 
     <script>
-        const blockId = "29335"; // Твой ID блока
-        const AdController = window.Adsgram.init({ blockId: blockId });
-        let balance = 0;
+        const AdController = window.Adsgram.init({ blockId: "29335" });
 
         document.getElementById('adBtn').onclick = () => {
-            AdController.show().then((result) => {
-                // Успешный просмотр
-                balance += 10;
-                document.getElementById('balance').innerText = balance;
-                alert("Круто! +10 монет.");
-            }).catch((result) => {
-                // Ошибка или закрытие
-                alert("Реклама не досмотрена");
-            });
+            AdController.show()
+                .then((result) => { alert("Успех! +10 монет"); })
+                .catch((result) => { alert("Ошибка или реклама не загружена: " + result.description); });
         };
     </script>
 </body>
