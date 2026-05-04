@@ -9,100 +9,64 @@
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
         :root {
-            --bg-body: #08080f;
-            --bg-card: rgba(255, 255, 255, 0.04);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --color-text-primary: #fff;
-            --color-text-secondary: rgba(255, 255, 255, 0.6);
-            --color-accent: #9d50bb;
-            --ad-btn-bg: #6c5ce7;
-            --progress-bg: #1a1a2e;
+            --bg-body: #08080f; --bg-card: rgba(255, 255, 255, 0.04); --card-border: rgba(255, 255, 255, 0.08);
+            --color-text-primary: #fff; --color-text-secondary: rgba(255, 255, 255, 0.6);
+            --color-accent: #9d50bb; --ad-btn-bg: #6c5ce7; --progress-bg: #1a1a2e;
         }
-
-        body.theme-grey {
-            --bg-body: #111; --bg-card: rgba(255, 255, 255, 0.03); --card-border: rgba(255, 255, 255, 0.05);
-            --color-accent: #777; --ad-btn-bg: #333;
-        }
-
-        body.theme-lime {
-            --bg-body: #050a06; --bg-card: rgba(255, 255, 255, 0.04); --card-border: rgba(50, 255, 126, 0.1);
-            --color-accent: #32ff7e; --ad-btn-bg: #1a4f31;
-        }
+        body.theme-grey { --color-accent: #777; --ad-btn-bg: #333; }
+        body.theme-lime { --color-accent: #32ff7e; --ad-btn-bg: #1a4f31; }
 
         body {
             background-color: var(--bg-body); color: var(--color-text-primary); font-family: 'Montserrat', sans-serif;
             display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh;
-            overflow-x: hidden; -webkit-user-select: none; user-select: none; box-sizing: border-box;
-            padding: 15px; padding-top: 50px; transition: 0.3s;
+            overflow-x: hidden; -webkit-user-select: none; box-sizing: border-box; padding: 15px; padding-top: 80px; transition: 0.3s;
         }
 
-        /* Top Bar */
-        .top-bar { position: absolute; top: 15px; left: 15px; right: 15px; display: flex; justify-content: flex-end; gap: 8px; z-index: 10; }
-        .dot { width: 22px; height: 22px; border-radius: 6px; border: 2px solid white; cursor: pointer; }
-        .lang-btn { background: var(--bg-card); border: 1px solid var(--card-border); color: white; font-family: 'Montserrat'; font-weight: 900; font-size: 10px; padding: 4px 8px; border-radius: 6px; cursor: pointer; }
+        /* Top Bar: Themes Left, Lang Right */
+        .top-bar { position: absolute; top: 20px; left: 15px; right: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+        .theme-row { display: flex; gap: 8px; }
+        .lang-row { display: flex; gap: 6px; }
+        .dot { width: 24px; height: 24px; border-radius: 7px; border: 2px solid white; cursor: pointer; }
+        .lang-btn { background: var(--bg-card); border: 1px solid var(--card-border); color: white; font-family: 'Montserrat'; font-weight: 900; font-size: 11px; padding: 5px 10px; border-radius: 8px; }
 
-        /* Card view */
-        .card { width: 100%; background: var(--bg-card); border-radius: 24px; border: 1px solid var(--card-border); box-sizing: border-box; padding: 20px; margin-bottom: 12px; }
+        /* Statistics block (3 cards) */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; width: 100%; margin-bottom: 15px; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--card-border); border-radius: 18px; padding: 12px 8px; text-align: center; }
+        .stat-icon { font-size: 16px; margin-bottom: 8px; display: block; opacity: 0.8; }
+        .stat-val { font-size: 13px; font-weight: 900; display: block; margin-bottom: 2px; }
+        .stat-lbl { font-size: 8px; color: var(--color-text-secondary); text-transform: uppercase; }
 
         /* Balance Card */
-        .balance-card { text-align: left; }
-        .label { font-size: 11px; color: var(--color-text-secondary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-        .balance-row { display: flex; align-items: center; gap: 8px; margin: 5px 0; }
-        .star-icon { font-size: 28px; color: var(--color-accent); }
-        #score { font-size: 36px; font-weight: 900; }
-        
-        .progress-box { margin-top: 15px; }
-        .progress-info { display: flex; justify-content: space-between; font-size: 11px; color: var(--color-text-secondary); margin-bottom: 6px; }
+        .card { width: 100%; background: var(--bg-card); border-radius: 24px; border: 1px solid var(--card-border); box-sizing: border-box; padding: 20px; margin-bottom: 12px; }
+        .label { font-size: 11px; color: var(--color-text-secondary); font-weight: 700; text-transform: uppercase; }
+        .balance-row { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+        #score { font-size: 40px; font-weight: 900; }
+        .progress-info { display: flex; justify-content: space-between; font-size: 11px; color: var(--color-text-secondary); margin: 15px 0 6px 0; }
         .progress-bg { width: 100%; height: 8px; background: var(--progress-bg); border-radius: 10px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--color-accent); width: 0%; transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 0 10px var(--color-accent); }
+        .progress-fill { height: 100%; background: var(--color-accent); width: 0%; transition: width 0.4s; box-shadow: 0 0 10px var(--color-accent); }
 
-        /* Ad Button Styles */
-        #ad-btn { 
-            width: 100%; padding: 20px; border: none; border-radius: 20px; color: white; font-weight: 900; font-size: 15px; cursor: pointer; 
-            background: var(--ad-btn-bg); display: flex; align-items: center; justify-content: center; gap: 12px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: 0.2s;
+        /* Ad Button */
+        #ad-btn { width: 100%; padding: 20px; border: none; border-radius: 22px; color: white; font-weight: 900; font-size: 16px; background: var(--ad-btn-bg); display: flex; align-items: center; justify-content: center; gap: 12px; transition: 0.2s; }
+        #ad-btn:disabled { opacity: 0.5; filter: grayscale(1); }
+
+        /* Toast */
+        #toast {
+            position: fixed; top: -120px; left: 50%; transform: translateX(-50%);
+            background: var(--bg-card); border: 2px solid var(--color-accent); padding: 15px 20px;
+            border-radius: 20px; z-index: 2000; transition: 0.5s; text-align: center; width: 85%;
+            backdrop-filter: blur(10px);
         }
-        #ad-btn:active { transform: scale(0.98); }
-        #ad-btn:disabled { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
+        #toast.show { top: 15px; }
 
-        .btn-hint { font-size: 10px; color: var(--color-text-secondary); text-align: center; width: 100%; display: block; margin-top: 8px; }
-
-        /* Shop Grid */
-        .shop { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin: 10px 0; }
-        .upgrade { background: var(--bg-card); border: 1px solid var(--card-border); border-radius: 20px; padding: 15px; text-align: center; cursor: pointer; }
-        .upgrade b { display: block; font-size: 12px; margin-bottom: 4px; }
-        .upgrade span { font-size: 10px; color: var(--color-text-secondary); }
-
-        /* Overlay & Spinner */
-        #loader-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85);
-            display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000;
-        }
-        .spinner {
-            width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.1); border-top-color: var(--color-accent);
-            border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px;
-        }
+        /* Loader */
+        #loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 3000; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--color-accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Toast Notification */
-        #toast {
-            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
-            background: var(--bg-card); border: 1px solid var(--color-accent); padding: 15px 25px;
-            border-radius: 18px; z-index: 2000; transition: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 80%;
-        }
-        #toast.show { top: 25px; }
-        #toast b { display: block; font-size: 14px; margin-bottom: 4px; }
-        #toast span { font-size: 12px; color: var(--color-accent); font-weight: 900; }
-
-        /* Leaderboard */
+        .shop { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin: 10px 0; }
+        .upgrade { background: var(--bg-card); border: 1px solid var(--card-border); border-radius: 20px; padding: 15px; text-align: center; }
+        .click-area { padding: 30px; text-align: center; }
         .leader-item { display: flex; justify-content: space-between; padding: 14px 18px; background: var(--bg-card); border-radius: 16px; margin-bottom: 6px; font-size: 12px; }
-        .leader-item b { color: var(--color-accent); }
-
-        /* Clicker */
-        .click-area { padding: 30px; text-align: center; cursor: pointer; }
-        #star-tap { font-size: 70px; transition: 0.05s; display: inline-block; }
-        .click-area:active #star-tap { transform: scale(0.9); }
     </style>
 </head>
 <body class="theme-purple">
@@ -113,80 +77,75 @@
     </div>
 
     <div id="toast">
-        <b id="toast-title">Награда получена!</b>
-        <span id="toast-msg">+1000 ⭐ добавлено к балансу</span>
+        <b id="t-reward-t">Награда получена!</b>
+        <span id="t-reward-m">+1000 ⭐ добавлено к балансу</span>
     </div>
 
     <div class="top-bar">
-        <div class="row">
+        <div class="theme-row">
             <div class="dot" style="background: #444;" onclick="setTheme('grey')"></div>
             <div class="dot" style="background: #9d50bb;" onclick="setTheme('purple')"></div>
             <div class="dot" style="background: #32ff7e;" onclick="setTheme('lime')"></div>
         </div>
-        <div class="row">
+        <div class="lang-row">
             <button class="lang-btn" onclick="changeLang('ru')">RU</button>
             <button class="lang-btn" onclick="changeLang('en')">EN</button>
         </div>
     </div>
 
-    <div class="card balance-card">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-icon">👁️</span>
+            <span class="stat-val" id="st-total">0</span>
+            <span class="stat-lbl" id="st-lbl-1">Всего</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">⭐</span>
+            <span class="stat-val" id="st-today">0</span>
+            <span class="stat-lbl" id="st-lbl-2">Сегодня</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">🎯</span>
+            <span class="stat-val" id="st-hour">0 / 1000</span>
+            <span class="stat-lbl" id="st-lbl-3">За час</span>
+        </div>
+    </div>
+
+    <div class="card">
         <span class="label" id="lbl-bal">Ваш баланс</span>
         <div class="balance-row">
-            <span class="star-icon">⭐</span>
+            <span style="font-size: 30px; color: #ffca28;">⭐</span>
             <span id="score">0</span>
         </div>
-        <div class="progress-box">
-            <div class="progress-info">
-                <span id="lbl-goal">Цель: 1000 ⭐</span>
-                <span id="prog-val">0 / 1000</span>
-            </div>
-            <div class="progress-bg">
-                <div class="progress-fill" id="pb"></div>
-            </div>
+        <div class="progress-info">
+            <span id="lbl-goal">Цель: 1000 ⭐</span>
+            <span id="prog-val">0 / 1000</span>
         </div>
+        <div class="progress-bg"><div class="progress-fill" id="pb"></div></div>
     </div>
 
-    <button id="ad-btn" onclick="showAd()">
-        <span>▶</span>
-        <span id="ad-btn-txt">Смотреть рекламу</span>
-    </button>
-    <span class="btn-hint" id="lbl-hint">Если не кликать по рекламе, награда может снизиться.</span>
+    <button id="ad-btn" onclick="showAd()">▶ <span id="ad-btn-txt">Смотреть рекламу</span></button>
 
     <div class="shop">
-        <div class="upgrade" onclick="buyUpgrade('click')">
-            <b id="up-mc">МУЛЬТИКЛИК</b>
-            <span id="lbl-c1">Цена:</span> <b id="c-cost">100</b>
-        </div>
-        <div class="upgrade" onclick="buyUpgrade('auto')">
-            <b id="up-ab">АВТО-БОТ</b>
-            <span id="lbl-c2">Цена:</span> <b id="a-cost">500</b>
-        </div>
+        <div class="upgrade" onclick="buyUpgrade('click')"><b id="up-mc">МУЛЬТИКЛИК</b><br><span id="c-cost">100</span> ⭐</div>
+        <div class="upgrade" onclick="buyUpgrade('auto')"><b id="up-ab">АВТО-БОТ</b><br><span id="a-cost">500</span> ⭐</div>
     </div>
 
-    <div class="card click-area" onclick="clickStar()">
-        <span id="star-tap">⭐</span>
-    </div>
+    <div class="card click-area" onclick="clickStar()"><span style="font-size: 60px;">⭐</span></div>
 
     <div style="width:100%">
         <b class="label" id="lbl-top">Топ игроков</b>
         <div class="leader-item"><span>1. КИТ_ИНВЕСТОР (бот)</span><b>1,200,500</b></div>
         <div class="leader-item" style="border: 1px solid var(--color-accent)">
-            <span>2. <span id="user-name">Player</span></span>
-            <b id="player-score">0</b>
+            <span>2. <span id="user-name">Player</span></span><b id="player-score">0</b>
         </div>
         <div class="leader-item"><span>3. ZROUTX_FAN (бот)</span><b>85,000</b></div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand();
-        
-        // ФИКС АККАУНТОВ: Создаем уникальный префикс для каждого юзера
         const userId = tg.initDataUnsafe?.user?.id || 'guest';
         const p = (key) => `u${userId}_${key}`;
-
-        const userDisplayName = tg.initDataUnsafe?.user?.first_name || "Player";
-        document.getElementById('user-name').innerText = userDisplayName;
 
         let balance = Number(localStorage.getItem(p('bal'))) || 0;
         let dpc = Number(localStorage.getItem(p('dpc'))) || 1;
@@ -194,19 +153,23 @@
         let cCost = Number(localStorage.getItem(p('cCost'))) || 100;
         let aCost = Number(localStorage.getItem(p('aCost'))) || 500;
         let currentLang = localStorage.getItem(p('lang')) || 'ru';
+        
+        // Статистика
+        let totalViews = Number(localStorage.getItem(p('stTotal'))) || 0;
+        let earnedToday = Number(localStorage.getItem(p('stToday'))) || 0;
+        let hourlyViews = Number(localStorage.getItem(p('stHour'))) || 0;
+        let lastHour = Number(localStorage.getItem(p('lastH'))) || new Date().getHours();
 
         const AdController = window.Adsgram.init({ blockId: "29401" });
 
         const i18n = {
-            ru: {
-                bal: "Ваш баланс", goal: "Цель", mc: "МУЛЬТИКЛИК", ab: "АВТО-БОТ", cost: "Цена:",
-                ad: "Смотреть рекламу", hint: "Если не кликать по рекламе, награда может снизиться.",
-                top: "Топ игроков", wait: "Подождите...", rewardT: "Награда получена!", rewardM: "звёзд добавлено к балансу"
+            ru: { 
+                bal: "Ваш баланс", goal: "Цель", mc: "МУЛЬТИКЛИК", ab: "АВТО-БОТ", top: "Топ игроков", wait: "Подождите...", 
+                s1: "Всего", s2: "Сегодня", s3: "За час", ad: "Смотреть рекламу", rewT: "Награда получена!", rewM: "звёзд добавлено"
             },
-            en: {
-                bal: "Your balance", goal: "Goal", mc: "MULTICLICK", ab: "AUTO-BOT", cost: "Cost:",
-                ad: "Watch Ad", hint: "If you don't click ads, rewards might decrease.",
-                top: "Leaderboard", wait: "Please wait...", rewardT: "Reward received!", rewardM: "stars added to balance"
+            en: { 
+                bal: "Balance", goal: "Goal", mc: "MULTICLICK", ab: "AUTO-BOT", top: "Leaderboard", wait: "Please wait...", 
+                s1: "Total", s2: "Today", s3: "Hourly", ad: "Watch Ad", rewT: "Reward Received!", rewM: "stars added"
             }
         };
 
@@ -215,54 +178,52 @@
 
         function clickStar() { balance += dpc; updateUI(); saveData(); }
 
-        function buyUpgrade(type) {
-            if (type === 'click' && balance >= cCost) { balance -= cCost; dpc += 1; cCost = Math.floor(cCost * 1.6); }
-            else if (type === 'auto' && balance >= aCost) { balance -= aCost; dps += 1; aCost = Math.floor(aCost * 1.6); }
-            updateUI(); saveData();
-        }
-
         function updateUI() {
             const t = i18n[currentLang];
             const fmt = (v) => Math.floor(v).toLocaleString();
             
+            // Сброс часовых просмотров
+            let nowH = new Date().getHours();
+            if (nowH !== lastHour) { hourlyViews = 0; lastHour = nowH; }
+
             document.getElementById('score').innerText = fmt(balance);
             document.getElementById('player-score').innerText = fmt(balance);
             document.getElementById('c-cost').innerText = fmt(cCost);
             document.getElementById('a-cost').innerText = fmt(aCost);
             
-            document.getElementById('lbl-bal').innerText = t.bal;
-            document.getElementById('up-mc').innerText = t.mc;
-            document.getElementById('up-ab').innerText = t.ab;
-            document.getElementById('lbl-c1').innerText = t.cost;
-            document.getElementById('lbl-c2').innerText = t.cost;
-            document.getElementById('lbl-hint').innerText = t.hint;
-            document.getElementById('lbl-top').innerText = t.top;
-            document.getElementById('wait-txt').innerText = t.wait;
+            // Статистика
+            document.getElementById('st-total').innerText = fmt(totalViews);
+            document.getElementById('st-today').innerText = fmt(earnedToday);
+            document.getElementById('st-hour').innerText = `${hourlyViews} / 1000`;
             
-            if(!document.getElementById('ad-btn').disabled) {
-                document.getElementById('ad-btn-txt').innerText = t.ad;
+            // Тексты
+            document.getElementById('lbl-bal').innerText = t.bal;
+            document.getElementById('lbl-top').innerText = t.top;
+            document.getElementById('st-lbl-1').innerText = t.s1;
+            document.getElementById('st-lbl-2').innerText = t.s2;
+            document.getElementById('st-lbl-3').innerText = t.s3;
+            document.getElementById('wait-txt').innerText = t.wait;
+            if(!document.getElementById('ad-btn').disabled) document.getElementById('ad-btn-txt').innerText = t.ad;
+
+            // Динамическая цель и прогресс
+            let nextGoal = Math.ceil((balance + 1) / 1000) * 1000;
+            if (nextGoal === 0) nextGoal = 1000;
+            let currentInLevel = balance % 1000;
+            
+            document.getElementById('lbl-goal').innerText = `${t.goal}: ${fmt(nextGoal)} ⭐`;
+            document.getElementById('prog-val').innerText = `${fmt(currentInLevel)} / 1000`;
+            document.getElementById('pb').style.width = (currentInLevel / 10) + '%';
+
+            // Проверка лимита
+            if (hourlyViews >= 1000) {
+                document.getElementById('ad-btn').disabled = true;
+                document.getElementById('ad-btn-txt').innerText = "Лимит (1ч)";
             }
-
-            // Прогресс бар (цель 1000 для уровня)
-            let currentProg = Math.floor(balance % 1000);
-            document.getElementById('prog-val').innerText = `${currentProg} / 1000`;
-            document.getElementById('lbl-goal').innerText = `${t.goal}: 1000 ⭐`;
-            document.getElementById('pb').style.width = (currentProg / 1000 * 100) + '%';
-        }
-
-        function showToast() {
-            const t = i18n[currentLang];
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-title').innerText = t.rewardT;
-            document.getElementById('toast-msg').innerText = `+1000 ${t.rewardM}`;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
         function showAd() {
             const btn = document.getElementById('ad-btn');
             const overlay = document.getElementById('loader-overlay');
-            
             overlay.style.display = 'flex';
             btn.disabled = true;
 
@@ -270,47 +231,53 @@
                 overlay.style.display = 'none';
                 if (result.done) {
                     balance += 1000;
+                    totalViews++;
+                    earnedToday += 1000;
+                    hourlyViews++;
                     showToast();
-                    updateUI();
-                    saveData();
                 }
                 startCooldown();
-            }).catch(() => {
-                overlay.style.display = 'none';
-                btn.disabled = false;
-            });
+                saveData();
+            }).catch(() => { overlay.style.display = 'none'; btn.disabled = false; });
+        }
+
+        function showToast() {
+            const t = i18n[currentLang];
+            const toast = document.getElementById('toast');
+            document.getElementById('t-reward-t').innerText = t.rewT;
+            document.getElementById('t-reward-m').innerText = `+1000 ${t.rewM}`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
         function startCooldown() {
+            let sec = 5;
             const btn = document.getElementById('ad-btn');
             const txt = document.getElementById('ad-btn-txt');
-            let sec = 5;
-            btn.disabled = true;
-            
             const timer = setInterval(() => {
                 txt.innerText = `${sec}c...`;
                 sec--;
-                if (sec < 0) {
-                    clearInterval(timer);
-                    btn.disabled = false;
-                    updateUI();
-                }
+                if (sec < 0) { clearInterval(timer); btn.disabled = (hourlyViews >= 1000); updateUI(); }
             }, 1000);
         }
 
         function saveData() {
-            localStorage.setItem(p('bal'), balance);
-            localStorage.setItem(p('dpc'), dpc);
-            localStorage.setItem(p('dps'), dps);
-            localStorage.setItem(p('cCost'), cCost);
-            localStorage.setItem(p('aCost'), aCost);
+            localStorage.setItem(p('bal'), balance); localStorage.setItem(p('stTotal'), totalViews);
+            localStorage.setItem(p('stToday'), earnedToday); localStorage.setItem(p('stHour'), hourlyViews);
+            localStorage.setItem(p('lastH'), lastHour);
+            localStorage.setItem(p('dpc'), dpc); localStorage.setItem(p('cCost'), cCost);
+            localStorage.setItem(p('aCost'), aCost); localStorage.setItem(p('dps'), dps);
+        }
+
+        function buyUpgrade(type) {
+            if (type === 'click' && balance >= cCost) { balance -= cCost; dpc += 1; cCost = Math.floor(cCost * 1.6); }
+            if (type === 'auto' && balance >= aCost) { balance -= aCost; dps += 1; aCost = Math.floor(aCost * 1.6); }
+            updateUI(); saveData();
         }
 
         setInterval(() => { if (dps > 0) { balance += dps; updateUI(); saveData(); } }, 1000);
-
-        const savedTheme = localStorage.getItem(p('theme'));
-        if (savedTheme) setTheme(savedTheme);
         updateUI();
+        document.getElementById('user-name').innerText = userDisplayName;
     </script>
 </body>
 </html>
