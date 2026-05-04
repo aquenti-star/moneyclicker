@@ -6,7 +6,7 @@
     <title>Star Clicker Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://sad.adsgram.ai/js/adsgram-ad-sdk.js"></script>
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
         :root { --bg: #0f0f1a; --accent: #9d50bb; --card: rgba(255,255,255,0.05); }
         body {
@@ -34,11 +34,12 @@
         #coin:active { transform: scale(0.92); }
 
         .shop { width: 90%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .upgrade { background: var(--card); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .upgrade { background: var(--card); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
         .upgrade b { color: var(--accent); display: block; font-size: 12px; margin-bottom: 5px; }
         .upgrade span { font-size: 10px; opacity: 0.8; }
 
-        .btn-ad { width: 90%; padding: 18px; background: #fff; color: #000; border-radius: 20px; border: none; font-weight: 900; margin: 20px 0; font-size: 14px; }
+        .btn-ad { width: 90%; padding: 18px; background: #fff; color: #000; border-radius: 20px; border: none; font-weight: 900; margin: 20px 0; font-size: 14px; cursor: pointer; }
+        .btn-ad:disabled { opacity: 0.6; cursor: not-allowed; }
 
         .leaderboard { width: 100%; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 30px 30px 0 0; margin-top: auto; box-sizing: border-box; }
         .leader-item { display: flex; justify-content: space-between; padding: 12px 20px; background: var(--card); border-radius: 15px; margin: 5px 0; font-size: 12px; }
@@ -87,13 +88,11 @@
     </div>
 
     <script>
-        // Инициализация Telegram
         const tg = window.Telegram.WebApp;
         tg.expand();
         const userDisplayName = tg.initDataUnsafe?.user?.first_name || "Player";
         document.getElementById('user-name').innerText = userDisplayName;
 
-        // Данные
         let balance = Number(localStorage.getItem('bal')) || 0;
         let dpc = Number(localStorage.getItem('dpc')) || 1;
         let dps = Number(localStorage.getItem('dps')) || 0;
@@ -101,15 +100,12 @@
         let aCost = Number(localStorage.getItem('aCost')) || 500;
         let currentLang = localStorage.getItem('lang') || 'ru';
 
-        // Реклама
-        let AdController = null;
-        if (window.Adsgram) {
-            AdController = window.Adsgram.init({ blockId: "29401" });
-        }
+        // Инициализация контроллера (Unit ID: 29401)
+        const AdController = window.Adsgram.init({ blockId: "29401" });
 
         const i18n = {
-            ru: { ad: "📺 БОНУС +1000", cost: "Цена", mc: "МУЛЬТИКЛИК", ab: "АВТО-БОТ", lvl: "УРОВЕНЬ", wait: "Реклама загружается.." },
-            en: { ad: "📺 REWARD +1000", cost: "Cost", mc: "MULTICLICK", ab: "AUTO-BOT", lvl: "LEVEL", wait: "Ad is loading.." }
+            ru: { ad: "📺 БОНУС +1000", cost: "Цена", mc: "МУЛЬТИКЛИК", ab: "АВТО-БОТ", lvl: "УРОВЕНЬ", wait: "ЗАГРУЗКА..." },
+            en: { ad: "📺 REWARD +1000", cost: "Cost", mc: "MULTICLICK", ab: "AUTO-BOT", lvl: "LEVEL", wait: "LOADING..." }
         };
 
         function changeLang(l) {
@@ -151,13 +147,11 @@
             document.getElementById('dps-val').innerText = dps;
             document.getElementById('c-cost').innerText = cCost;
             document.getElementById('a-cost').innerText = aCost;
-            
             document.getElementById('ad-btn').innerText = t.ad;
             document.getElementById('cost-txt-1').innerText = t.cost;
             document.getElementById('cost-txt-2').innerText = t.cost;
             document.getElementById('up-c-name').innerText = t.mc;
             document.getElementById('up-a-name').innerText = t.ab;
-            
             let lvl = Math.floor(balance / 1000) + 1;
             document.getElementById('lvl-txt').innerText = t.lvl + " " + lvl;
         }
@@ -170,7 +164,6 @@
             localStorage.setItem('aCost', aCost);
         }
 
-        // Авто-клик
         setInterval(() => {
             if (dps > 0) {
                 balance += dps;
@@ -179,24 +172,30 @@
             }
         }, 1000);
 
-        async function showAd() {
-            if (!AdController) {
-                alert(i18n[currentLang].wait);
-                return;
-            }
-            try {
-                const result = await AdController.show();
+        // Функция показа рекламы строго по гайду
+        function showAd() {
+            const btn = document.getElementById('ad-btn');
+            const t = i18n[currentLang];
+            
+            btn.innerText = t.wait;
+            btn.disabled = true;
+
+            AdController.show().then((result) => {
                 if (result.done) {
                     balance += 1000;
                     updateUI();
                     saveData();
                 }
-            } catch (e) {
-                alert(i18n[currentLang].wait);
-            }
+                btn.innerText = t.ad;
+                btn.disabled = false;
+            }).catch((err) => {
+                console.error("Ad error:", err);
+                alert(currentLang === 'ru' ? "Реклама загружается, попробуй еще раз через пару секунд!" : "Ad is loading, try again in a few seconds!");
+                btn.innerText = t.ad;
+                btn.disabled = false;
+            });
         }
 
-        // Восстановление темы
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme) setTheme(savedTheme);
 
