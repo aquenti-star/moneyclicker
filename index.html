@@ -4,46 +4,123 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Star Clicker Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
-        :root { --bg: #0f0f1a; --accent: #9d50bb; --card: rgba(255,255,255,0.05); }
+        /* Определение основных цветов для темизации */
+        :root {
+            /* Базовая тема (Фиолетовая) */
+            --bg-body: #08080f;
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --color-text-primary: #fff;
+            --color-text-secondary: rgba(255, 255, 255, 0.6);
+            --color-accent: #9d50bb;
+            --color-shadow: rgba(157, 80, 187, 0.3);
+            --ad-btn-bg: #2a3d7c; /* Базовый синий для кнопки рекламы */
+            --progress-bg: #222;
+        }
+
+        /* Серая тема */
+        body.theme-grey {
+            --bg-body: #111;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.05);
+            --color-accent: #555;
+            --color-shadow: rgba(85, 85, 85, 0.2);
+            --ad-btn-bg: #333;
+        }
+
+        /* Лаймовая тема */
+        body.theme-lime {
+            --bg-body: #050a06;
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --card-border: rgba(50, 255, 126, 0.1);
+            --color-accent: #32ff7e;
+            --color-shadow: rgba(50, 255, 126, 0.3);
+            --ad-btn-bg: #1a4f31; /* Темно-зеленый */
+        }
+
+        /* Глобальные стили */
         body {
-            background: var(--bg); color: white; font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-body); color: var(--color-text-primary); font-family: 'Montserrat', sans-serif; font-weight: 500;
             display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh;
-            overflow-x: hidden; -webkit-user-select: none; user-select: none; transition: 0.3s;
+            overflow-x: hidden; -webkit-user-select: none; user-select: none; transition: 0.2s; box-sizing: border-box;
+            padding: 15px; padding-top: 60px; /* Отступ под top-bar */
         }
-        body.theme-grey { --bg: #222; --accent: #777; }
-        body.theme-purple { --bg: #0f0f1a; --accent: #9d50bb; }
-        body.theme-lime { --bg: #0b1a0f; --accent: #32ff7e; }
 
-        .top-bar { position: absolute; top: 15px; right: 15px; display: flex; flex-direction: column; gap: 10px; align-items: flex-end; z-index: 10; }
-        .row { display: flex; gap: 8px; }
-        .dot { width: 26px; height: 26px; border-radius: 8px; border: 2px solid white; cursor: pointer; }
-        .lang-btn { background: rgba(255,255,255,0.1); border: 1px solid white; color: white; font-family: 'Montserrat'; font-weight: 900; font-size: 10px; padding: 5px 10px; border-radius: 8px; cursor: pointer; }
+        b { font-weight: 900; }
 
-        .header { width: 90%; text-align: center; margin-top: 60px; }
-        #score { font-size: 50px; margin: 10px 0; text-shadow: 0 0 20px var(--accent); }
+        /* Верхняя панель (темы, языки) */
+        .top-bar { position: absolute; top: 15px; left: 15px; right: 15px; display: flex; justify-content: flex-end; gap: 8px; align-items: center; z-index: 10; }
+        .row { display: flex; gap: 6px; }
+        .dot { width: 24px; height: 24px; border-radius: 8px; border: 2px solid white; cursor: pointer; box-sizing: border-box; }
+        .lang-btn { background: var(--bg-card); border: 1px solid var(--card-border); color: var(--color-text-primary); font-family: 'Montserrat'; font-weight: 900; font-size: 10px; padding: 5px 10px; border-radius: 8px; cursor: pointer; }
+
+        /* Заголовок игры */
+        .header { width: 100%; text-align: center; margin-bottom: 10px; }
+        .header h1 { font-size: 24px; margin: 0; font-weight: 900; letter-spacing: -0.5px; }
+        .header p { font-size: 12px; margin: 3px 0; color: var(--color-text-secondary); }
+
+        /* Общие стили карточек (Card view) */
+        .card { width: 100%; background: var(--bg-card); border-radius: 20px; border: 1px solid var(--card-border); box-sizing: border-box; padding: 15px; margin-bottom: 10px; position: relative; overflow: hidden; }
+
+        /* Карточка Баннера (Aesthetic) */
+        .banner-card { display: flex; align-items: center; gap: 12px; }
+        .banner-icon { width: 40px; height: 40px; background: rgba(157, 80, 187, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 1px solid rgba(157, 80, 187, 0.2); }
+        .banner-content { flex-grow: 1; }
+        .banner-title { font-weight: 900; font-size: 13px; display: block; margin-bottom: 1px; }
+        .banner-sub { font-size: 11px; color: var(--color-text-secondary); display: block; }
+        .banner-info { font-size: 10px; text-align: center; color: var(--color-text-secondary); display: block; margin: 8px 0; }
+        .banner-btn { width: 100%; padding: 12px; background: #e67e22; border: none; color: white; border-radius: 15px; font-weight: 900; font-size: 13px; cursor: pointer; margin-top: 5px; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3); transition: transform 0.1s; }
+        .banner-btn:active { transform: translateY(1px); }
+
+        /* Карточка Баланса (Sleek view) */
+        .balance-card { text-align: center; padding: 20px 15px; position: relative; }
+        .balance-label { font-size: 12px; color: var(--color-text-secondary); display: block; margin-bottom: 1px; font-weight: 700; }
+        .balance-value-row { display: flex; align-items: center; justify-content: center; gap: 6px; position: relative; left: -10px; /* Сдвиг, чтобы ⭐ была как $ на скриншоте */ }
+        .balance-icon { font-size: 26px; color: var(--color-accent); text-shadow: 0 0 10px var(--color-accent); font-weight: 900;}
+        #score { font-size: 38px; font-weight: 900; color: var(--color-text-primary); letter-spacing: -1px; }
         
-        #coin {
-            width: 200px; height: 200px; background: var(--card); border: 8px solid rgba(255,255,255,0.1);
-            border-radius: 60px; display: flex; align-items: center; justify-content: center;
-            font-size: 90px; transition: transform 0.05s; margin: 20px 0; touch-action: manipulation;
-        }
-        #coin:active { transform: scale(0.92); }
+        .progress-container { width: 100%; height: 6px; background: var(--progress-bg); border-radius: 10px; overflow: hidden; margin: 15px 0 6px 0; }
+        .progress-bar { height: 100%; background: var(--color-accent); width: 0%; transition: width 0.3s; box-shadow: 0 0 10px var(--color-accent); }
+        .balance-level { font-size: 11px; color: var(--color-text-secondary); font-weight: 700; display: block; }
+        #lvl-txt { font-weight: 900; color: var(--color-text-primary); }
 
-        .shop { width: 90%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .upgrade { background: var(--card); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
-        .upgrade b { color: var(--accent); display: block; font-size: 12px; margin-bottom: 5px; }
-        .upgrade span { font-size: 10px; opacity: 0.8; }
+        /* Карточка кликера */
+        #clicker-card { text-align: center; padding: 30px; cursor: pointer; border-color: rgba(255,255,255,0.02); background: none;}
+        #clicker-card:active { border-color: rgba(255,255,255,0.06); background: var(--bg-card);}
+        #coin-emoji { font-size: 80px; transition: transform 0.05s; display: block; filter: drop-shadow(0 0 10px rgba(255,255,0,0.3)); }
+        #clicker-card:active #coin-emoji { transform: scale(0.92); }
+        .stats-row { display: flex; justify-content: center; gap: 15px; font-size: 10px; color: var(--color-text-secondary); margin-top: 15px;}
 
-        .btn-ad { width: 90%; padding: 18px; background: #fff; color: #000; border-radius: 20px; border: none; font-weight: 900; margin: 20px 0; font-size: 14px; cursor: pointer; }
-        .btn-ad:disabled { opacity: 0.6; cursor: not-allowed; }
+        /* Магазин (Квадратные карточки) */
+        .shop { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-bottom: 10px; }
+        .upgrade-card { background: var(--bg-card); border: 1px solid var(--card-border); border-radius: 18px; padding: 15px; text-align: center; cursor: pointer; transition: 0.1s; display: flex; flex-direction: column; align-items: center;}
+        .upgrade-card:active { transform: translateY(1px); border-color: rgba(255,255,255,0.15);}
+        .upgrade-card b { display: block; font-size: 12px; margin-bottom: 4px; letter-spacing: -0.2px;}
+        .upgrade-card span.cost-label { font-size: 10px; color: var(--color-text-secondary); margin-top: 2px;}
+        .upgrade-card b.cost-value { font-size: 12px; color: var(--color-accent); font-weight: 900; margin-top: -1px;}
 
-        .leaderboard { width: 100%; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 30px 30px 0 0; margin-top: auto; box-sizing: border-box; }
-        .leader-item { display: flex; justify-content: space-between; padding: 12px 20px; background: var(--card); border-radius: 15px; margin: 5px 0; font-size: 12px; }
-        .my-score { border: 1px solid var(--accent); background: rgba(255,255,255,0.1); }
+        /* Кнопка рекламы (Стиль `image_2.png`) */
+        #ad-btn { width: 100%; padding: 18px; border: none; border-radius: 18px; color: white; font-weight: 900; font-size: 14px; cursor: pointer; transition: 0.1s, background 0.2s; position: relative; margin-bottom: 6px;
+                  background: var(--ad-btn-bg); display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        #ad-btn:active { transform: translateY(1px); }
+        #ad-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .ad-icon-group { display: flex; gap: 4px; align-items: center; font-size: 13px; font-family: initial;}
+        
+        .btn-caption { width: 90%; font-size: 10px; text-align: center; color: var(--color-text-secondary); margin-bottom: 15px; display: block; }
+
+        /* Лидерборд */
+        .leaderboard { width: 100%; background: none; border: none; padding: 0;}
+        .leaderboard-title { font-size: 14px; font-weight: 900; margin-bottom: 8px; display: block; color: var(--color-text-primary);}
+        .leader-item { display: flex; justify-content: space-between; padding: 12px 18px; background: var(--bg-card); border-radius: 14px; margin-bottom: 5px; font-size: 12px; border: 1px solid var(--card-border); }
+        .leader-item span:first-child { color: var(--color-text-secondary); }
+        .leader-item span:last-child { font-weight: 900; color: var(--color-text-primary); }
+        .leader-item.my-score { border: 1px solid var(--color-accent); background: rgba(255,255,255,0.06); }
+        .leader-item.my-score span:last-child { color: var(--color-accent); }
+
     </style>
 </head>
 <body class="theme-purple">
@@ -61,33 +138,68 @@
     </div>
 
     <div class="header">
-        <div id="lvl-txt">LEVEL 1</div>
-        <div id="score">0</div>
-        <div style="font-size: 11px; opacity: 0.6;">DPC: <span id="dpc-val">1</span> | DPS: <span id="dps-val">0</span></div>
+        <h1 id="app-title">STAR CLICKER PRO</h1>
+        <p id="app-sub">Тапай⭐ — Зарабатывай!</p>
     </div>
 
-    <div id="coin" onclick="clickStar()">⭐</div>
+    <div class="card banner-card">
+        <div class="banner-icon">🤖</div>
+        <div class="banner-content">
+            <b class="banner-title" id="bnr-t">РЕКЛАМНЫЙ БАННЕР</b>
+            <span class="banner-sub" id="bnr-s">Фармим валюту ZROUTX</span>
+        </div>
+    </div>
+    <span class="banner-info" id="bnr-i">Кликни по баннеру и получи бонус ⭐</span>
+    <button class="banner-btn" id="bnr-b">ОТКРЫТЬ ⭐</button>
+    <div style="height: 10px;"></div><div class="card balance-card">
+        <span class="balance-label" id="bal-lbl">ВАШ БАЛАНС</span>
+        <div class="balance-value-row">
+            <span class="balance-icon">⭐</span>
+            <span id="score">0</span>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="pb"></div>
+        </div>
+        <span class="balance-level">Уровень: <span id="lvl-txt">1</span> | Прогресс: <span id="pb-val">0</span>/1000</span>
+    </div>
+
+    <div class="card" id="clicker-card" onclick="clickStar()">
+        <span id="coin-emoji">⭐</span>
+        <div class="stats-row">
+            <span>DPC: <b id="dpc-val">1</b></span>
+            <span>DPS: <b id="dps-val">0</b></span>
+        </div>
+    </div>
 
     <div class="shop">
-        <div class="upgrade" onclick="buyUpgrade('click')">
-            <b id="up-c-name">MULTICLICK</b>
-            <span id="cost-txt-1">Cost</span>: <span id="c-cost">100</span>
+        <div class="upgrade-card" onclick="buyUpgrade('click')">
+            <b id="up-c-name">МУЛЬТИКЛИК</b>
+            <span class="cost-label" id="cost-lbl-1">Цена:</span>
+            <b class="cost-value" id="c-cost">100</b>
         </div>
-        <div class="upgrade" onclick="buyUpgrade('auto')">
-            <b id="up-a-name">AUTO-BOT</b>
-            <span id="cost-txt-2">Cost</span>: <span id="a-cost">500</span>
+        <div class="upgrade-card" onclick="buyUpgrade('auto')">
+            <b id="up-a-name">АВТО-БОТ</b>
+            <span class="cost-label" id="cost-lbl-2">Цена:</span>
+            <b class="cost-value" id="a-cost">500</b>
         </div>
     </div>
 
-    <button class="btn-ad" id="ad-btn" onclick="showAd()">📺 REWARD +1000</button>
+    <button id="ad-btn" onclick="showAd()">
+        <span class="ad-icon-group">▶ ✨</span>
+        <span id="ad-txt">СМОТРЕТЬ (БОНУС +1000)</span>
+        <span class="ad-icon-group">✨</span>
+    </button>
+    <span class="btn-caption" id="ad-caption">Кликни 1 раз, чтобы получить ⭐, оплата падает если не досмотреть.</span>
 
-    <div class="leaderboard">
+    <div class="leaderboard card">
+        <b class="leaderboard-title" id="lead-t">РЕЙТИНГ ⭐</b>
         <div class="leader-item"><span>1. КИТ_ИНВЕСТОР</span><span>1,200,500</span></div>
         <div class="leader-item my-score"><span>2. <span id="user-name">Player</span></span><span id="player-score">0</span></div>
         <div class="leader-item"><span>3. ZROUTX_FAN</span><span>85,000</span></div>
     </div>
 
     <script>
+        // --- JS Логика (Полностью сохранена) ---
         const tg = window.Telegram.WebApp;
         tg.expand();
         const userDisplayName = tg.initDataUnsafe?.user?.first_name || "Player";
@@ -100,106 +212,104 @@
         let aCost = Number(localStorage.getItem('aCost')) || 500;
         let currentLang = localStorage.getItem('lang') || 'ru';
 
-        // Инициализация контроллера (Unit ID: 29401)
+        // Инициализация Adsgram (UnitID: 29401)
         const AdController = window.Adsgram.init({ blockId: "29401" });
 
+        // Словари
         const i18n = {
-            ru: { ad: "📺 БОНУС +1000", cost: "Цена", mc: "МУЛЬТИКЛИК", ab: "АВТО-БОТ", lvl: "УРОВЕНЬ", wait: "ЗАГРУЗКА..." },
-            en: { ad: "📺 REWARD +1000", cost: "Cost", mc: "MULTICLICK", ab: "AUTO-BOT", lvl: "LEVEL", wait: "LOADING..." }
+            ru: { 
+                title: "STAR CLICKER PRO", sub: "Тапай⭐ — Зарабатывай!",
+                bnrT: "РЕКЛАМНЫЙ БАННЕР", bnrS: "Фармим валюту ZROUTX", bnrI: "Кликни по баннеру и получи бонус ⭐", bnrB: "ОТКРЫТЬ ⭐",
+                balL: "ВАШ БАЛАНС", lvl: "УРОВЕНЬ", prog: "Прогресс",
+                mc: "МУЛЬТИКЛИК", ab: "АВТО-БОТ", cost: "Цена:", adBtn: "СМОТРЕТЬ (БОНУС +1000)", adCap: "Кликни 1 раз, чтобы получить ⭐, оплата падает если не досмотреть.",
+                lead: "РЕЙТИНГ ⭐", wait: "ЗАГРУЗКА..."
+            },
+            en: { 
+                title: "STAR CLICKER PRO", sub: "Tap⭐ — Earn stars!",
+                bnrT: "AD BANNER", bnrS: "Farm ZROUTX coins", bnrI: "Click banner to get reward ⭐", bnrB: "OPEN ⭐",
+                balL: "YOUR BALANCE", lvl: "LEVEL", prog: "Progress",
+                mc: "MULTICLICK", ab: "AUTO-BOT", cost: "Cost:", adBtn: "WATCH (REWARD +1000)", adCap: "Click once to get ⭐, reward drops if not fully watched.",
+                lead: "LEADERBOARD ⭐", wait: "LOADING..."
+            }
         };
 
-        function changeLang(l) {
-            currentLang = l;
-            localStorage.setItem('lang', l);
-            updateUI();
-        }
+        function changeLang(l) { currentLang = l; localStorage.setItem('lang', l); updateUI(); }
+        function setTheme(t) { document.body.className = 'theme-' + t; localStorage.setItem('theme', t); }
 
-        function setTheme(t) {
-            document.body.className = 'theme-' + t;
-            localStorage.setItem('theme', t);
-        }
-
-        function clickStar() {
-            balance += dpc;
-            updateUI();
-            saveData();
-        }
+        function clickStar() { balance += dpc; updateUI(); saveData(); }
 
         function buyUpgrade(type) {
-            if (type === 'click' && balance >= cCost) {
-                balance -= cCost;
-                dpc += 1;
-                cCost = Math.floor(cCost * 1.6);
-            } else if (type === 'auto' && balance >= aCost) {
-                balance -= aCost;
-                dps += 1;
-                aCost = Math.floor(aCost * 1.6);
-            }
-            updateUI();
-            saveData();
+            if (type === 'click' && balance >= cCost) { balance -= cCost; dpc += 1; cCost = Math.floor(cCost * 1.6); }
+            else if (type === 'auto' && balance >= aCost) { balance -= aCost; dps += 1; aCost = Math.floor(aCost * 1.6); }
+            updateUI(); saveData();
         }
 
         function updateUI() {
             const t = i18n[currentLang];
-            document.getElementById('score').innerText = Math.floor(balance).toLocaleString();
-            document.getElementById('player-score').innerText = Math.floor(balance).toLocaleString();
+            // Числа
+            const fmtVal = (val) => Math.floor(val).toLocaleString('ru-RU');
+            document.getElementById('score').innerText = fmtVal(balance);
+            document.getElementById('player-score').innerText = fmtVal(balance);
             document.getElementById('dpc-val').innerText = dpc;
             document.getElementById('dps-val').innerText = dps;
-            document.getElementById('c-cost').innerText = cCost;
-            document.getElementById('a-cost').innerText = aCost;
-            document.getElementById('ad-btn').innerText = t.ad;
-            document.getElementById('cost-txt-1').innerText = t.cost;
-            document.getElementById('cost-txt-2').innerText = t.cost;
+            document.getElementById('c-cost').innerText = fmtVal(cCost);
+            document.getElementById('a-cost').innerText = fmtVal(aCost);
+            
+            // Тексты (Header)
+            document.getElementById('app-title').innerText = t.title;
+            document.getElementById('app-sub').innerText = t.sub;
+            // Тексты (Banner)
+            document.getElementById('bnr-t').innerText = t.bnrT;
+            document.getElementById('bnr-s').innerText = t.bnrS;
+            document.getElementById('bnr-i').innerText = t.bnrI;
+            document.getElementById('bnr-b').innerText = t.bnrB;
+            // Тексты (Balance & Upgrades)
+            document.getElementById('bal-lbl').innerText = t.balL;
             document.getElementById('up-c-name').innerText = t.mc;
             document.getElementById('up-a-name').innerText = t.ab;
+            document.getElementById('cost-lbl-1').innerText = t.cost;
+            document.getElementById('cost-lbl-2').innerText = t.cost;
+            // Тексты (Ad & Lead)
+            if(!document.getElementById('ad-btn').disabled) document.getElementById('ad-txt').innerText = t.adBtn;
+            document.getElementById('ad-caption').innerText = t.adCap;
+            document.getElementById('lead-t').innerText = t.lead;
+            
+            // Уровень и прогресс (Логика: 1000 монет на уровень)
             let lvl = Math.floor(balance / 1000) + 1;
-            document.getElementById('lvl-txt').innerText = t.lvl + " " + lvl;
+            let currentProg = Math.floor(balance % 1000);
+            let percent = (currentProg / 1000) * 100;
+            
+            document.getElementById('lvl-txt').innerText = lvl;
+            document.getElementById('pb-val').innerText = currentProg;
+            document.getElementById('pb').style.width = percent + '%';
         }
 
         function saveData() {
-            localStorage.setItem('bal', balance);
-            localStorage.setItem('dpc', dpc);
-            localStorage.setItem('dps', dps);
-            localStorage.setItem('cCost', cCost);
-            localStorage.setItem('aCost', aCost);
+            localStorage.setItem('bal', balance); localStorage.setItem('dpc', dpc); localStorage.setItem('dps', dps); localStorage.setItem('cCost', cCost); localStorage.setItem('aCost', aCost);
         }
 
-        setInterval(() => {
-            if (dps > 0) {
-                balance += dps;
-                updateUI();
-                saveData();
-            }
-        }, 1000);
+        setInterval(() => { if (dps > 0) { balance += dps; updateUI(); saveData(); } }, 1000);
 
-        // Функция показа рекламы строго по гайду
+        // Показ рекламы
         function showAd() {
             const btn = document.getElementById('ad-btn');
+            const txt = document.getElementById('ad-txt');
             const t = i18n[currentLang];
             
-            btn.innerText = t.wait;
-            btn.disabled = true;
+            txt.innerText = t.wait; btn.disabled = true;
 
             AdController.show().then((result) => {
-                if (result.done) {
-                    balance += 1000;
-                    updateUI();
-                    saveData();
-                }
-                btn.innerText = t.ad;
-                btn.disabled = false;
+                if (result.done) { balance += 1000; updateUI(); saveData(); }
+                btn.disabled = false; updateUI();
             }).catch((err) => {
-                console.error("Ad error:", err);
-                alert(currentLang === 'ru' ? "Реклама загружается, попробуй еще раз через пару секунд!" : "Ad is loading, try again in a few seconds!");
-                btn.innerText = t.ad;
-                btn.disabled = false;
+                btn.disabled = false; updateUI();
+                alert(currentLang === 'ru' ? "Реклама загружается, попробуй через минуту!" : "Ad is loading, try again in a minute!");
             });
         }
 
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) setTheme(savedTheme);
-
+        const savedTheme = localStorage.getItem('theme'); if (savedTheme) setTheme(savedTheme);
         updateUI();
+
     </script>
 </body>
 </html>
