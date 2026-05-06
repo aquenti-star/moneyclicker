@@ -27,37 +27,38 @@
 
         .top-bar { position: absolute; top: 20px; left: 15px; right: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
         .theme-row { display: flex; gap: 8px; }
-        .lang-row { display: flex; gap: 6px; }
         .dot { width: 24px; height: 24px; border-radius: 7px; border: 2px solid white; cursor: pointer; }
+        .lang-btn { background: var(--bg-card); border: 1px solid var(--card-border); color: white; font-family: 'Montserrat'; font-weight: 900; font-size: 11px; padding: 5px 10px; border-radius: 8px; }
 
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; width: 100%; margin-bottom: 15px; }
         .stat-card { background: var(--bg-card); border: 1px solid var(--card-border); border-radius: 18px; padding: 12px 8px; text-align: center; }
-        .stat-val { font-size: 13px; font-weight: 900; display: block; }
+        .stat-val { font-size: 13px; font-weight: 900; display: block; margin-bottom: 2px; }
         .stat-lbl { font-size: 8px; color: var(--color-text-secondary); text-transform: uppercase; }
 
-        .card { width: 100%; background: var(--bg-card); border-radius: 24px; border: 1px solid var(--card-border); padding: 20px; margin-bottom: 12px; box-sizing: border-box;}
+        .card { width: 100%; background: var(--bg-card); border-radius: 24px; border: 1px solid var(--card-border); box-sizing: border-box; padding: 20px; margin-bottom: 12px; }
+        .label { font-size: 11px; color: var(--color-text-secondary); font-weight: 700; text-transform: uppercase; }
         #score { font-size: 40px; font-weight: 900; }
-        .progress-bg { width: 100%; height: 8px; background: var(--progress-bg); border-radius: 10px; overflow: hidden; }
+        .progress-bg { width: 100%; height: 8px; background: var(--progress-bg); border-radius: 10px; overflow: hidden; margin-top: 10px;}
         .progress-fill { height: 100%; background: var(--color-accent); width: 0%; transition: width 0.4s; box-shadow: 0 0 10px var(--color-accent); }
 
-        .ads-row { display: flex; gap: 10px; width: 100%; margin-bottom: 12px; }
-        .ad-button { flex: 1; padding: 18px 10px; border: none; border-radius: 22px; color: white; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--ad-btn-bg); transition: 0.2s; }
+        /* Вертикальные большие кнопки */
+        .ads-column { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-bottom: 15px; }
+        .ad-button { width: 100%; padding: 20px; border: none; border-radius: 22px; color: white; font-weight: 900; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--ad-btn-bg); transition: 0.2s; cursor: pointer; }
         .ad-button:disabled { opacity: 0.5; filter: grayscale(1); }
 
         #toast { position: fixed; top: -120px; left: 50%; transform: translateX(-50%); background: var(--bg-card); border: 2px solid var(--color-accent); padding: 15px 20px; border-radius: 20px; z-index: 2000; transition: 0.5s; text-align: center; width: 85%; backdrop-filter: blur(10px); }
         #toast.show { top: 15px; }
 
-        #loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 3000; }
         .shop { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin: 10px 0; }
-        .upgrade { background: var(--bg-card); border: 1px solid var(--card-border); border-radius: 20px; padding: 15px; text-align: center; }
-        .click-area { padding: 30px; text-align: center; cursor: pointer; }
-        .leader-item { display: flex; justify-content: space-between; padding: 14px 18px; background: var(--bg-card); border-radius: 16px; margin-bottom: 6px; font-size: 12px; }
-        .my-rank { border: 1px solid var(--color-accent); }
+        .upgrade { background: var(--bg-card); border: 1px solid var(--card-border); border-radius: 20px; padding: 15px; text-align: center; cursor: pointer; }
+        .click-area { padding: 40px; text-align: center; cursor: pointer; }
+        
+        .leaderboard-container { width: 100%; margin-top: 10px; }
+        .leader-item { display: flex; justify-content: space-between; padding: 14px 18px; background: var(--bg-card); border-radius: 16px; margin-bottom: 6px; font-size: 13px; border: 1px solid transparent; }
+        .my-rank { border-color: var(--color-accent) !important; background: rgba(157, 80, 187, 0.1); }
     </style>
 </head>
 <body class="theme-purple">
-
-    <div id="loader-overlay"><b id="wait-txt">Подождите...</b></div>
 
     <div id="toast">
         <b id="t-reward-t">Награда получена!</b><br>
@@ -71,30 +72,37 @@
             <div class="dot" style="background: #32ff7e;" onclick="setTheme('lime')"></div>
         </div>
         <div class="lang-row">
-            <button style="background:none; border:1px solid #fff; color:#fff; border-radius:5px;" onclick="changeLang('ru')">RU</button>
-            <button style="background:none; border:1px solid #fff; color:#fff; border-radius:5px;" onclick="changeLang('en')">EN</button>
+            <button class="lang-btn" onclick="changeLang('ru')">RU</button>
+            <button class="lang-btn" onclick="changeLang('en')">EN</button>
         </div>
     </div>
 
     <div class="stats-grid">
         <div class="stat-card"><span class="stat-val" id="st-total">0</span><span class="stat-lbl" id="st-lbl-1">Всего</span></div>
         <div class="stat-card"><span class="stat-val" id="st-today">0</span><span class="stat-lbl" id="st-lbl-2">Сегодня</span></div>
-        <div class="stat-card"><span class="stat-val" id="st-hour">0 / 1000</span><span class="stat-lbl" id="st-lbl-3">За час</span></div>
+        <div class="stat-card"><span class="stat-val" id="st-hour">0</span><span class="stat-lbl" id="st-lbl-3">За час</span></div>
     </div>
 
     <div class="card">
-        <span class="label" id="lbl-bal" style="font-size:11px; opacity:0.6;">Ваш баланс</span>
-        <div style="font-size:40px; font-weight:900; margin:10px 0;">⭐ <span id="score">0</span></div>
-        <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:5px;">
-            <span id="lbl-goal">Цель: 1000</span>
+        <span class="label" id="lbl-bal">Ваш баланс</span>
+        <div style="display: flex; align-items: center; gap: 10px; margin: 8px 0;">
+            <span style="font-size: 30px;">⭐</span>
+            <span id="score">0</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--color-text-secondary);">
+            <span id="lbl-goal">Цель: 1000 ⭐</span>
             <span id="prog-val">0 / 1000</span>
         </div>
         <div class="progress-bg"><div class="progress-fill" id="pb"></div></div>
     </div>
 
-    <div class="ads-row">
-        <button id="ad-btn" class="ad-button" onclick="showAd()">▶ <span id="ad-btn-txt">Реклама</span></button>
-        <button id="boost-btn" class="ad-button" onclick="showBoostAd()">🚀 <span id="boost-btn-txt">Буст x2</span></button>
+    <div class="ads-column">
+        <button id="ad-btn" class="ad-button" onclick="showAd()">
+            ▶ <span id="ad-btn-txt">СМОТРЕТЬ РЕКЛАМУ (+1000 ⭐)</span>
+        </button>
+        <button id="boost-btn" class="ad-button" onclick="showBoostAd()">
+            🚀 <span id="boost-btn-txt">БУСТ X2</span>
+        </button>
     </div>
 
     <div class="shop">
@@ -102,12 +110,15 @@
         <div class="upgrade" onclick="buyUpgrade('auto')"><b id="up-ab">АВТО-БОТ</b><br><span id="a-cost">500</span> ⭐</div>
     </div>
 
-    <div class="card click-area" onclick="clickStar()"><span style="font-size: 60px;">⭐</span></div>
+    <div class="card click-area" onclick="clickStar()">
+        <span style="font-size: 60px;">⭐</span>
+    </div>
 
-    <div style="width:100%">
-        <b style="font-size:11px; opacity:0.6; text-transform:uppercase;" id="lbl-top">Топ игроков</b>
+    <div class="leaderboard-container">
+        <b class="label" id="lbl-top">Топ игроков</b>
         <div id="leaderboard-list" style="margin-top:10px;">
-            </div>
+            <div class="leader-item"><span>Загрузка топа...</span></div>
+        </div>
     </div>
 
     <script>
@@ -116,12 +127,12 @@
         const userDisplayName = tg.initDataUnsafe?.user?.first_name || "Player";
         const p = (key) => `u${userId}_${key}`;
 
-        // --- FIREBASE ---
+        // Firebase Config
         const firebaseConfig = { databaseURL: "https://magicclicker-7ff2a-default-rtdb.europe-west1.firebasedatabase.app/" };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // --- ПЕРЕМЕННЫЕ ---
+        // Variables
         let balance = Number(localStorage.getItem(p('bal'))) || 0;
         let dpc = Number(localStorage.getItem(p('dpc'))) || 1;
         let dps = Number(localStorage.getItem(p('dps'))) || 0;
@@ -132,12 +143,13 @@
         let earnedToday = Number(localStorage.getItem(p('stToday'))) || 0;
         let hourlyViews = Number(localStorage.getItem(p('stHour'))) || 0;
         let lastHour = Number(localStorage.getItem(p('lastH'))) || new Date().getHours();
+
         let boostActive = false;
         let boostTimeLeft = 0;
 
         const i18n = {
-            ru: { bal: "Ваш баланс", goal: "Цель", mc: "МУЛЬТИКЛИК", ab: "АВТО-БОТ", top: "Топ игроков", wait: "Подождите...", s1: "Всего", s2: "Сегодня", s3: "За час", ad: "Реклама", bst: "Буст x2", rewT: "Награда получена!" },
-            en: { bal: "Balance", goal: "Goal", mc: "MULTICLICK", ab: "AUTO-BOT", top: "Leaderboard", wait: "Wait...", s1: "Total", s2: "Today", s3: "Hourly", ad: "Ad", bst: "Boost x2", rewT: "Reward Received!" }
+            ru: { bal: "Ваш баланс", goal: "Цель", mc: "МУЛЬТИКЛИК", ab: "АВТО-БОТ", top: "Топ игроков", s1: "Всего", s2: "Сегодня", s3: "За час", ad: "СМОТРЕТЬ РЕКЛАМУ (+1000 ⭐)", bst: "БУСТ X2", rewT: "Награда получена!" },
+            en: { bal: "Balance", goal: "Goal", mc: "MULTICLICK", ab: "AUTO-BOT", top: "Leaderboard", s1: "Total", s2: "Today", s3: "Hourly", ad: "WATCH AD (+1000 ⭐)", bst: "BOOST X2", rewT: "Reward Received!" }
         };
 
         const AdController = window.Adsgram.init({ blockId: "29401" });
@@ -153,8 +165,9 @@
         function updateUI() {
             const t = i18n[currentLang];
             const fmt = (v) => Math.floor(v).toLocaleString();
+            
             document.getElementById('score').innerText = fmt(balance);
-            document.getElementById('st-total').innerText = totalViews;
+            document.getElementById('st-total').innerText = fmt(totalViews);
             document.getElementById('st-today').innerText = fmt(earnedToday);
             document.getElementById('st-hour').innerText = `${hourlyViews} / 1000`;
             document.getElementById('c-cost').innerText = fmt(cCost);
@@ -165,12 +178,13 @@
             document.getElementById('st-lbl-1').innerText = t.s1;
             document.getElementById('st-lbl-2').innerText = t.s2;
             document.getElementById('st-lbl-3').innerText = t.s3;
-            document.getElementById('ad-btn-txt').innerText = t.ad;
+            
+            if(!document.getElementById('ad-btn').disabled) document.getElementById('ad-btn-txt').innerText = t.ad;
             if(!boostActive) document.getElementById('boost-btn-txt').innerText = t.bst;
 
             let nextGoal = Math.ceil((balance + 1) / 1000) * 1000 || 1000;
             let currentInLevel = balance % 1000;
-            document.getElementById('lbl-goal').innerText = `${t.goal}: ${fmt(nextGoal)}`;
+            document.getElementById('lbl-goal').innerText = `${t.goal}: ${fmt(nextGoal)} ⭐`;
             document.getElementById('prog-val').innerText = `${fmt(currentInLevel)} / 1000`;
             document.getElementById('pb').style.width = (currentInLevel / 10) + '%';
         }
@@ -178,21 +192,22 @@
         function showAd() {
             AdController.show().then((res) => {
                 if(res.done) { balance += 1000; totalViews++; earnedToday += 1000; hourlyViews++; showToast("+1000 ⭐"); updateUI(); saveData(); }
-            });
+            }).catch(() => {});
         }
 
         function showBoostAd() {
             if (boostActive) return;
-            AdController.show().then((res) => { if(res.done) activateBoost(); });
+            AdController.show().then((res) => { if(res.done) activateBoost(); }).catch(() => {});
         }
 
         function activateBoost() {
             boostActive = true; boostTimeLeft = 60;
             const txt = document.getElementById('boost-btn-txt');
+            document.getElementById('boost-btn').disabled = true;
             const timer = setInterval(() => {
                 txt.innerText = `${boostTimeLeft}с`;
                 boostTimeLeft--;
-                if(boostTimeLeft < 0) { clearInterval(timer); boostActive = false; updateUI(); }
+                if(boostTimeLeft < 0) { clearInterval(timer); boostActive = false; document.getElementById('boost-btn').disabled = false; updateUI(); }
             }, 1000);
         }
 
@@ -211,16 +226,14 @@
             localStorage.setItem(p('stToday'), earnedToday);
             localStorage.setItem(p('stHour'), hourlyViews);
             localStorage.setItem(p('lastH'), lastHour);
-
             database.ref('users/' + userId).set({ name: userDisplayName, score: balance });
         }
 
         function syncLeaderboard() {
-            database.ref('users').orderByChild('score').limitToLast(5).on('value', (snap) => {
+            database.ref('users').orderByChild('score').limitToLast(10).on('value', (snap) => {
                 const data = snap.val();
-                const players = [];
-                for(let id in data) players.push(data[id]);
-                players.sort((a,b) => b.score - a.score);
+                if(!data) return;
+                const players = Object.values(data).sort((a,b) => b.score - a.score);
                 document.getElementById('leaderboard-list').innerHTML = players.map((pl, i) => `
                     <div class="leader-item ${pl.name === userDisplayName ? 'my-rank' : ''}">
                         <span>${i+1}. ${pl.name}</span><b>${Math.floor(pl.score).toLocaleString()}</b>
@@ -237,8 +250,11 @@
 
         setInterval(() => { if(dps > 0) { balance += dps; updateUI(); saveData(); } }, 1000);
 
+        // Init
         setTheme(localStorage.getItem(p('theme')) || 'purple');
-        updateUI(); syncLeaderboard(); tg.ready();
+        updateUI(); 
+        syncLeaderboard(); 
+        tg.ready();
     </script>
 </body>
 </html>
