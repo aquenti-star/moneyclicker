@@ -6,7 +6,13 @@
     <title>Star Clicker Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+    
+    <script>
+        const script = document.createElement('script');
+        script.src = "https://sad.adsgram.ai/js/sad.min.js?v=" + Date.now();
+        document.head.appendChild(script);
+    </script>
+
     <style>
         :root {
             --bg-body: #08080f; --bg-card: rgba(255, 255, 255, 0.04); --card-border: rgba(255, 255, 255, 0.08);
@@ -65,15 +71,8 @@
 </head>
 <body class="theme-purple">
 
-    <div id="loader-overlay">
-        <div class="spinner"></div>
-        <b id="wait-txt">Подождите...</b>
-    </div>
-
-    <div id="toast">
-        <b id="t-reward-t">Награда получена!</b><br>
-        <span id="t-reward-m">+1000 ⭐</span>
-    </div>
+    <div id="loader-overlay"><div class="spinner"></div><b id="wait-txt">Загрузка...</b></div>
+    <div id="toast"><b id="t-reward-t">Награда!</b><br><span id="t-reward-m">+1000 ⭐</span></div>
 
     <div class="top-bar">
         <div class="theme-row">
@@ -128,9 +127,7 @@
         <div class="upgrade" onclick="buyUpgrade('auto')"><b id="up-ab">АВТО-БОТ</b><br><span id="a-cost">500</span> ⭐</div>
     </div>
 
-    <div class="card click-area" onclick="clickStar()">
-        <span style="font-size: 60px;">⭐</span>
-    </div>
+    <div class="card click-area" onclick="clickStar()"><span style="font-size: 60px;">⭐</span></div>
 
     <div style="width:100%">
         <b class="label" id="lbl-top">Топ игроков</b>
@@ -141,7 +138,6 @@
                 <span>3. <span id="user-name">Player</span></span><b id="player-score">0</b>
             </div>
             <div class="leader-item"><span>4. ZROUTX_FAN (бот)</span><b>85,000</b></div>
-            <div class="leader-item"><span>5. CRYPTO_RICH (бот)</span><b>12,400</b></div>
         </div>
     </div>
 
@@ -151,7 +147,6 @@
         const userDisplayName = tg.initDataUnsafe?.user?.first_name || "Player";
         const p = (key) => `u${userId}_${key}`;
 
-        // 1. Инициализация данных
         let balance = Number(localStorage.getItem(p('bal'))) || 0;
         let dpc = Number(localStorage.getItem(p('dpc'))) || 1;
         let dps = Number(localStorage.getItem(p('dps'))) || 0;
@@ -163,23 +158,18 @@
         let hourlyViews = Number(localStorage.getItem(p('stHour'))) || 0;
         let lastHour = Number(localStorage.getItem(p('lastH'))) || new Date().getHours();
         let boostActive = false;
-        let boostTimeLeft = 0;
 
         const i18n = {
-            ru: { bal: "Ваш баланс", goal: "Цель", mc: "МУЛЬТИКЛИК", ab: "АВТО-БОТ", top: "Топ игроков", wait: "Подождите...", s1: "Всего", s2: "Сегодня", s3: "За час", ad: "Реклама", bst: "Буст x2", rewT: "Награда!", rewM: "добавлено к балансу" },
-            en: { bal: "Balance", goal: "Goal", mc: "MULTICLICK", ab: "AUTO-BOT", top: "Leaderboard", wait: "Please wait...", s1: "Total", s2: "Today", s3: "Hourly", ad: "Ad", bst: "Boost x2", rewT: "Reward!", rewM: "added to balance" }
+            ru: { bal: "Ваш баланс", goal: "Цель", mc: "МУЛЬТИКЛИК", ab: "АВТО-БОТ", top: "Топ игроков", wait: "Подождите...", s1: "Всего", s2: "Сегодня", s3: "За час", ad: "Реклама", bst: "Буст x2", rewT: "Награда!" },
+            en: { bal: "Balance", goal: "Goal", mc: "MULTICLICK", ab: "AUTO-BOT", top: "Leaderboard", wait: "Please wait...", s1: "Total", s2: "Today", s3: "Hourly", ad: "Ad", bst: "Boost x2", rewT: "Reward!" }
         };
 
-        // Инициализация AdsGram
-        const AdController = window.Adsgram.init({ blockId: "29401" });
-
-        function setTheme(t) { document.body.className = 'theme-' + t; localStorage.setItem(p('theme'), t); }
-        function changeLang(l) { currentLang = l; localStorage.setItem(p('lang'), l); updateUI(); }
-
-        function clickStar() {
-            balance += (boostActive ? dpc * 2 : dpc);
-            updateUI(); saveData();
-        }
+        let AdController;
+        window.onload = () => {
+            if (window.Adsgram) {
+                AdController = window.Adsgram.init({ blockId: "29401" });
+            }
+        };
 
         function updateUI() {
             const t = i18n[currentLang];
@@ -194,94 +184,72 @@
             document.getElementById('st-hour').innerText = `${hourlyViews} / 1000`;
             document.getElementById('c-cost').innerText = fmt(cCost);
             document.getElementById('a-cost').innerText = fmt(aCost);
-            
-            document.getElementById('lbl-bal').innerText = t.bal;
-            document.getElementById('lbl-top').innerText = t.top;
-            document.getElementById('st-lbl-1').innerText = t.s1;
-            document.getElementById('st-lbl-2').innerText = t.s2;
-            document.getElementById('st-lbl-3').innerText = t.s3;
-            document.getElementById('wait-txt').innerText = t.wait;
             document.getElementById('user-name').innerText = userDisplayName;
-
-            if(!document.getElementById('ad-btn').disabled) document.getElementById('ad-btn-txt').innerText = t.ad;
-            if(!boostActive) document.getElementById('boost-btn-txt').innerText = t.bst;
 
             let nextGoal = Math.ceil((balance + 1) / 1000) * 1000 || 1000;
             let currentInLevel = balance % 1000;
-            document.getElementById('lbl-goal').innerText = `${t.goal}: ${fmt(nextGoal)} ⭐`;
-            document.getElementById('prog-val').innerText = `${fmt(currentInLevel)} / 1000`;
             document.getElementById('pb').style.width = (currentInLevel / 10) + '%';
+            document.getElementById('prog-val').innerText = `${fmt(currentInLevel)} / 1000`;
         }
 
         function showAd() {
+            if (!AdController) return;
             const overlay = document.getElementById('loader-overlay');
             overlay.style.display = 'flex';
+            
             AdController.show().then((result) => {
-                overlay.style.display = 'none';
                 if (result.done) {
                     balance += 1000; totalViews++; earnedToday += 1000; hourlyViews++;
                     showToast("+1000 ⭐");
-                    startCooldown('ad-btn', 'ad-btn-txt', i18n[currentLang].ad);
                     updateUI(); saveData();
                 }
-            }).catch(() => { overlay.style.display = 'none'; });
+            }).finally(() => {
+                overlay.style.display = 'none';
+            });
         }
 
         function showBoostAd() {
-            if (boostActive) return;
+            if (boostActive || !AdController) return;
             const overlay = document.getElementById('loader-overlay');
             overlay.style.display = 'flex';
             AdController.show().then((result) => {
-                overlay.style.display = 'none';
-                if (result.done) { activateBoost(); totalViews++; showToast("Буст x2!"); }
-            }).catch(() => { overlay.style.display = 'none'; });
+                if (result.done) {
+                    boostActive = true;
+                    let time = 60;
+                    const btn = document.getElementById('boost-btn');
+                    btn.disabled = true;
+                    const tm = setInterval(() => {
+                        document.getElementById('boost-btn-txt').innerText = `${time}с`;
+                        time--;
+                        if (time < 0) { clearInterval(tm); boostActive = false; btn.disabled = false; updateUI(); }
+                    }, 1000);
+                }
+            }).finally(() => { overlay.style.display = 'none'; });
         }
 
-        function activateBoost() {
-            boostActive = true; boostTimeLeft = 60;
-            const btn = document.getElementById('boost-btn');
-            const txt = document.getElementById('boost-btn-txt');
-            btn.disabled = true;
-            const timer = setInterval(() => {
-                txt.innerText = `${boostTimeLeft}с`;
-                boostTimeLeft--;
-                if (boostTimeLeft < 0) { clearInterval(timer); boostActive = false; btn.disabled = false; updateUI(); }
-            }, 1000);
+        function clickStar() { balance += (boostActive ? dpc * 2 : dpc); updateUI(); saveData(); }
+        function buyUpgrade(t) {
+            if (t === 'click' && balance >= cCost) { balance -= cCost; dpc++; cCost = Math.floor(cCost * 1.6); }
+            if (t === 'auto' && balance >= aCost) { balance -= aCost; dps++; aCost = Math.floor(aCost * 1.6); }
+            updateUI(); saveData();
         }
-
-        function startCooldown(id, txtId, def) {
-            let s = 5; const b = document.getElementById(id); const t = document.getElementById(txtId);
-            b.disabled = true;
-            const tm = setInterval(() => { t.innerText = `${s}c`; s--; if(s < 0) { clearInterval(tm); b.disabled = (hourlyViews >= 1000); updateUI(); } }, 1000);
+        function saveData() {
+            localStorage.setItem(p('bal'), balance); localStorage.setItem(p('dpc'), dpc);
+            localStorage.setItem(p('stTotal'), totalViews); localStorage.setItem(p('stToday'), earnedToday);
+            localStorage.setItem(p('stHour'), hourlyViews); localStorage.setItem(p('lastH'), lastHour);
+            localStorage.setItem(p('cCost'), cCost); localStorage.setItem(p('aCost'), aCost); localStorage.setItem(p('dps'), dps);
         }
-
         function showToast(msg) {
-            const t = i18n[currentLang];
             const toast = document.getElementById('toast');
-            document.getElementById('t-reward-t').innerText = t.rewT;
             document.getElementById('t-reward-m').innerText = msg;
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
-
-        function saveData() {
-            localStorage.setItem(p('bal'), balance);
-            localStorage.setItem(p('stTotal'), totalViews); localStorage.setItem(p('stToday'), earnedToday);
-            localStorage.setItem(p('stHour'), hourlyViews); localStorage.setItem(p('lastH'), lastHour);
-            localStorage.setItem(p('dpc'), dpc); localStorage.setItem(p('cCost'), cCost);
-            localStorage.setItem(p('aCost'), aCost); localStorage.setItem(p('dps'), dps);
-        }
-
-        function buyUpgrade(type) {
-            if (type === 'click' && balance >= cCost) { balance -= cCost; dpc++; cCost = Math.floor(cCost * 1.6); }
-            if (type === 'auto' && balance >= aCost) { balance -= aCost; dps++; aCost = Math.floor(aCost * 1.6); }
-            updateUI(); saveData();
-        }
+        function setTheme(t) { document.body.className = 'theme-' + t; }
+        function changeLang(l) { currentLang = l; updateUI(); }
 
         setInterval(() => { if (dps > 0) { balance += dps; updateUI(); saveData(); } }, 1000);
-
-        // Старт
-        setTheme(localStorage.getItem(p('theme')) || 'purple');
+        
         updateUI();
         tg.ready();
     </script>
