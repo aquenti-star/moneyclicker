@@ -27,41 +27,49 @@
 
         .top-bar { position: absolute; top: 20px; left: 15px; right: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
         .theme-row { display: flex; gap: 8px; }
+        .lang-row { display: flex; gap: 6px; }
         .dot { width: 24px; height: 24px; border-radius: 7px; border: 2px solid white; cursor: pointer; }
         .lang-btn { background: var(--bg-card); border: 1px solid var(--card-border); color: white; font-family: 'Montserrat'; font-weight: 900; font-size: 11px; padding: 5px 10px; border-radius: 8px; }
 
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; width: 100%; margin-bottom: 15px; }
         .stat-card { background: var(--bg-card); border: 1px solid var(--card-border); border-radius: 18px; padding: 12px 8px; text-align: center; }
+        .stat-icon { font-size: 16px; margin-bottom: 8px; display: block; opacity: 0.8; }
         .stat-val { font-size: 13px; font-weight: 900; display: block; margin-bottom: 2px; }
         .stat-lbl { font-size: 8px; color: var(--color-text-secondary); text-transform: uppercase; }
 
         .card { width: 100%; background: var(--bg-card); border-radius: 24px; border: 1px solid var(--card-border); box-sizing: border-box; padding: 20px; margin-bottom: 12px; }
         .label { font-size: 11px; color: var(--color-text-secondary); font-weight: 700; text-transform: uppercase; }
+        .balance-row { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
         #score { font-size: 40px; font-weight: 900; }
-        .progress-bg { width: 100%; height: 8px; background: var(--progress-bg); border-radius: 10px; overflow: hidden; margin-top: 10px;}
+        .progress-info { display: flex; justify-content: space-between; font-size: 11px; color: var(--color-text-secondary); margin: 15px 0 6px 0; }
+        .progress-bg { width: 100%; height: 8px; background: var(--progress-bg); border-radius: 10px; overflow: hidden; }
         .progress-fill { height: 100%; background: var(--color-accent); width: 0%; transition: width 0.4s; box-shadow: 0 0 10px var(--color-accent); }
 
-        /* Вертикальные большие кнопки */
-        .ads-column { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-bottom: 15px; }
-        .ad-button { width: 100%; padding: 20px; border: none; border-radius: 22px; color: white; font-weight: 900; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--ad-btn-bg); transition: 0.2s; cursor: pointer; }
+        /* Кнопки одна под другой */
+        .ads-column { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-bottom: 12px; }
+        .ad-button { width: 100%; padding: 18px 10px; border: none; border-radius: 22px; color: white; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; background: var(--ad-btn-bg); }
         .ad-button:disabled { opacity: 0.5; filter: grayscale(1); }
 
         #toast { position: fixed; top: -120px; left: 50%; transform: translateX(-50%); background: var(--bg-card); border: 2px solid var(--color-accent); padding: 15px 20px; border-radius: 20px; z-index: 2000; transition: 0.5s; text-align: center; width: 85%; backdrop-filter: blur(10px); }
         #toast.show { top: 15px; }
 
+        #loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 3000; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--color-accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         .shop { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin: 10px 0; }
-        .upgrade { background: var(--bg-card); border: 1px solid var(--card-border); border-radius: 20px; padding: 15px; text-align: center; cursor: pointer; }
-        .click-area { padding: 40px; text-align: center; cursor: pointer; }
-        
-        .leaderboard-container { width: 100%; margin-top: 10px; }
-        .leader-item { display: flex; justify-content: space-between; padding: 14px 18px; background: var(--bg-card); border-radius: 16px; margin-bottom: 6px; font-size: 13px; border: 1px solid transparent; }
-        .my-rank { border-color: var(--color-accent) !important; background: rgba(157, 80, 187, 0.1); }
+        .upgrade { background: var(--bg-card); border: 1px solid var(--card-border); border-radius: 20px; padding: 15px; text-align: center; }
+        .click-area { padding: 30px; text-align: center; }
+        .leader-item { display: flex; justify-content: space-between; padding: 14px 18px; background: var(--bg-card); border-radius: 16px; margin-bottom: 6px; font-size: 12px; }
+        .my-rank { border: 1px solid var(--color-accent); }
     </style>
 </head>
 <body class="theme-purple">
 
+    <div id="loader-overlay"><div class="spinner"></div><b id="wait-txt">Подождите...</b></div>
+
     <div id="toast">
-        <b id="t-reward-t">Награда получена!</b><br>
+        <b id="t-reward-t">Награда получена!</b>
         <span id="t-reward-m">+1000 ⭐</span>
     </div>
 
@@ -78,18 +86,30 @@
     </div>
 
     <div class="stats-grid">
-        <div class="stat-card"><span class="stat-val" id="st-total">0</span><span class="stat-lbl" id="st-lbl-1">Всего</span></div>
-        <div class="stat-card"><span class="stat-val" id="st-today">0</span><span class="stat-lbl" id="st-lbl-2">Сегодня</span></div>
-        <div class="stat-card"><span class="stat-val" id="st-hour">0</span><span class="stat-lbl" id="st-lbl-3">За час</span></div>
+        <div class="stat-card">
+            <span class="stat-icon">👁️</span>
+            <span class="stat-val" id="st-total">0</span>
+            <span class="stat-lbl" id="st-lbl-1">Всего</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">⭐</span>
+            <span class="stat-val" id="st-today">0</span>
+            <span class="stat-lbl" id="st-lbl-2">Сегодня</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-icon">🎯</span>
+            <span class="stat-val" id="st-hour">0 / 1000</span>
+            <span class="stat-lbl" id="st-lbl-3">За час</span>
+        </div>
     </div>
 
     <div class="card">
         <span class="label" id="lbl-bal">Ваш баланс</span>
-        <div style="display: flex; align-items: center; gap: 10px; margin: 8px 0;">
+        <div class="balance-row">
             <span style="font-size: 30px;">⭐</span>
             <span id="score">0</span>
         </div>
-        <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--color-text-secondary);">
+        <div class="progress-info">
             <span id="lbl-goal">Цель: 1000 ⭐</span>
             <span id="prog-val">0 / 1000</span>
         </div>
@@ -97,12 +117,8 @@
     </div>
 
     <div class="ads-column">
-        <button id="ad-btn" class="ad-button" onclick="showAd()">
-            ▶ <span id="ad-btn-txt">СМОТРЕТЬ РЕКЛАМУ (+1000 ⭐)</span>
-        </button>
-        <button id="boost-btn" class="ad-button" onclick="showBoostAd()">
-            🚀 <span id="boost-btn-txt">БУСТ X2</span>
-        </button>
+        <button id="ad-btn" class="ad-button" onclick="showAd()">▶ <span id="ad-btn-txt">СМОТРЕТЬ РЕКЛАМУ (+1000 ⭐)</span></button>
+        <button id="boost-btn" class="ad-button" onclick="showBoostAd()">🚀 <span id="boost-btn-txt">БУСТ X2</span></button>
     </div>
 
     <div class="shop">
@@ -110,14 +126,12 @@
         <div class="upgrade" onclick="buyUpgrade('auto')"><b id="up-ab">АВТО-БОТ</b><br><span id="a-cost">500</span> ⭐</div>
     </div>
 
-    <div class="card click-area" onclick="clickStar()">
-        <span style="font-size: 60px;">⭐</span>
-    </div>
+    <div class="card click-area" onclick="clickStar()"><span style="font-size: 60px;">⭐</span></div>
 
-    <div class="leaderboard-container">
+    <div style="width:100%">
         <b class="label" id="lbl-top">Топ игроков</b>
         <div id="leaderboard-list" style="margin-top:10px;">
-            <div class="leader-item"><span>Загрузка топа...</span></div>
+            <div class="leader-item"><span>Загрузка...</span></div>
         </div>
     </div>
 
@@ -127,12 +141,11 @@
         const userDisplayName = tg.initDataUnsafe?.user?.first_name || "Player";
         const p = (key) => `u${userId}_${key}`;
 
-        // Firebase Config
+        // Firebase
         const firebaseConfig = { databaseURL: "https://magicclicker-7ff2a-default-rtdb.europe-west1.firebasedatabase.app/" };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Variables
         let balance = Number(localStorage.getItem(p('bal'))) || 0;
         let dpc = Number(localStorage.getItem(p('dpc'))) || 1;
         let dps = Number(localStorage.getItem(p('dps'))) || 0;
@@ -143,41 +156,42 @@
         let earnedToday = Number(localStorage.getItem(p('stToday'))) || 0;
         let hourlyViews = Number(localStorage.getItem(p('stHour'))) || 0;
         let lastHour = Number(localStorage.getItem(p('lastH'))) || new Date().getHours();
-
         let boostActive = false;
         let boostTimeLeft = 0;
 
-        const i18n = {
-            ru: { bal: "Ваш баланс", goal: "Цель", mc: "МУЛЬТИКЛИК", ab: "АВТО-БОТ", top: "Топ игроков", s1: "Всего", s2: "Сегодня", s3: "За час", ad: "СМОТРЕТЬ РЕКЛАМУ (+1000 ⭐)", bst: "БУСТ X2", rewT: "Награда получена!" },
-            en: { bal: "Balance", goal: "Goal", mc: "MULTICLICK", ab: "AUTO-BOT", top: "Leaderboard", s1: "Total", s2: "Today", s3: "Hourly", ad: "WATCH AD (+1000 ⭐)", bst: "BOOST X2", rewT: "Reward Received!" }
-        };
-
         const AdController = window.Adsgram.init({ blockId: "29401" });
 
-        function setTheme(t) { document.body.className = 'theme-' + t; localStorage.setItem(p('theme'), t); }
-        function changeLang(l) { currentLang = l; localStorage.setItem(p('lang'), l); updateUI(); }
+        const i18n = {
+            ru: { bal: "Ваш баланс", goal: "Цель", mc: "МУЛЬТИКЛИК", ab: "АВТО-БОТ", top: "Топ игроков", wait: "Подождите...", s1: "Всего", s2: "Сегодня", s3: "За час", ad: "СМОТРЕТЬ РЕКЛАМУ (+1000 ⭐)", bst: "БУСТ X2", rewT: "Награда получена!" },
+            en: { bal: "Balance", goal: "Goal", mc: "MULTICLICK", ab: "AUTO-BOT", top: "Leaderboard", wait: "Please wait...", s1: "Total", s2: "Today", s3: "Hourly", ad: "WATCH AD (+1000 ⭐)", bst: "BOOST X2", rewT: "Reward Received!" }
+        };
 
-        function clickStar() {
-            balance += (boostActive ? dpc * 2 : dpc);
-            updateUI(); saveData();
+        function changeLang(l) { currentLang = l; localStorage.setItem(p('lang'), l); updateUI(); }
+        function setTheme(t) { document.body.className = 'theme-' + t; localStorage.setItem(p('theme'), t); }
+
+        function clickStar() { 
+            balance += (boostActive ? dpc * 2 : dpc); 
+            updateUI(); saveData(); 
         }
 
         function updateUI() {
             const t = i18n[currentLang];
             const fmt = (v) => Math.floor(v).toLocaleString();
-            
+            let nowH = new Date().getHours();
+            if (nowH !== lastHour) { hourlyViews = 0; lastHour = nowH; }
+
             document.getElementById('score').innerText = fmt(balance);
+            document.getElementById('c-cost').innerText = fmt(cCost);
+            document.getElementById('a-cost').innerText = fmt(aCost);
             document.getElementById('st-total').innerText = fmt(totalViews);
             document.getElementById('st-today').innerText = fmt(earnedToday);
             document.getElementById('st-hour').innerText = `${hourlyViews} / 1000`;
-            document.getElementById('c-cost').innerText = fmt(cCost);
-            document.getElementById('a-cost').innerText = fmt(aCost);
-            
             document.getElementById('lbl-bal').innerText = t.bal;
             document.getElementById('lbl-top').innerText = t.top;
             document.getElementById('st-lbl-1').innerText = t.s1;
             document.getElementById('st-lbl-2').innerText = t.s2;
             document.getElementById('st-lbl-3').innerText = t.s3;
+            document.getElementById('wait-txt').innerText = t.wait;
             
             if(!document.getElementById('ad-btn').disabled) document.getElementById('ad-btn-txt').innerText = t.ad;
             if(!boostActive) document.getElementById('boost-btn-txt').innerText = t.bst;
@@ -190,28 +204,41 @@
         }
 
         function showAd() {
-            AdController.show().then((res) => {
-                if(res.done) { balance += 1000; totalViews++; earnedToday += 1000; hourlyViews++; showToast("+1000 ⭐"); updateUI(); saveData(); }
-            }).catch(() => {});
+            const btn = document.getElementById('ad-btn');
+            const overlay = document.getElementById('loader-overlay');
+            overlay.style.display = 'flex';
+            AdController.show().then((result) => {
+                overlay.style.display = 'none';
+                if (result.done) { balance += 1000; totalViews++; earnedToday += 1000; hourlyViews++; showToast("+1000 ⭐"); updateUI(); saveData(); }
+            }).catch(() => { overlay.style.display = 'none'; });
         }
 
         function showBoostAd() {
             if (boostActive) return;
-            AdController.show().then((res) => { if(res.done) activateBoost(); }).catch(() => {});
+            const overlay = document.getElementById('loader-overlay');
+            overlay.style.display = 'flex';
+            AdController.show().then((result) => {
+                overlay.style.display = 'none';
+                if (result.done) activateBoost();
+            }).catch(() => { overlay.style.display = 'none'; });
         }
 
         function activateBoost() {
             boostActive = true; boostTimeLeft = 60;
+            const btn = document.getElementById('boost-btn');
             const txt = document.getElementById('boost-btn-txt');
-            document.getElementById('boost-btn').disabled = true;
+            btn.disabled = true;
             const timer = setInterval(() => {
-                txt.innerText = `${boostTimeLeft}с`;
+                txt.innerText = `${boostTimeLeft}c`;
                 boostTimeLeft--;
-                if(boostTimeLeft < 0) { clearInterval(timer); boostActive = false; document.getElementById('boost-btn').disabled = false; updateUI(); }
+                if (boostTimeLeft < 0) {
+                    clearInterval(timer); boostActive = false; btn.disabled = false; updateUI();
+                }
             }, 1000);
         }
 
         function showToast(msg) {
+            const t = i18n[currentLang];
             const toast = document.getElementById('toast');
             document.getElementById('t-reward-m').innerText = msg;
             toast.classList.add('show');
@@ -219,13 +246,11 @@
         }
 
         function saveData() {
-            localStorage.setItem(p('bal'), balance);
+            localStorage.setItem(p('bal'), balance); localStorage.setItem(p('stTotal'), totalViews);
+            localStorage.setItem(p('stToday'), earnedToday); localStorage.setItem(p('stHour'), hourlyViews);
+            localStorage.setItem(p('lastH'), lastHour);
             localStorage.setItem(p('dpc'), dpc); localStorage.setItem(p('cCost'), cCost);
             localStorage.setItem(p('aCost'), aCost); localStorage.setItem(p('dps'), dps);
-            localStorage.setItem(p('stTotal'), totalViews);
-            localStorage.setItem(p('stToday'), earnedToday);
-            localStorage.setItem(p('stHour'), hourlyViews);
-            localStorage.setItem(p('lastH'), lastHour);
             database.ref('users/' + userId).set({ name: userDisplayName, score: balance });
         }
 
@@ -243,17 +268,17 @@
         }
 
         function buyUpgrade(type) {
-            if(type === 'click' && balance >= cCost) { balance -= cCost; dpc++; cCost = Math.floor(cCost * 1.6); }
-            if(type === 'auto' && balance >= aCost) { balance -= aCost; dps++; aCost = Math.floor(aCost * 1.6); }
+            if (type === 'click' && balance >= cCost) { balance -= cCost; dpc += 1; cCost = Math.floor(cCost * 1.6); }
+            if (type === 'auto' && balance >= aCost) { balance -= aCost; dps += 1; aCost = Math.floor(aCost * 1.6); }
             updateUI(); saveData();
         }
 
-        setInterval(() => { if(dps > 0) { balance += dps; updateUI(); saveData(); } }, 1000);
-
-        // Init
+        setInterval(() => { if (dps > 0) { balance += dps; updateUI(); saveData(); } }, 1000);
+        
         setTheme(localStorage.getItem(p('theme')) || 'purple');
         updateUI(); 
-        syncLeaderboard(); 
+        syncLeaderboard();
+        document.getElementById('user-name').innerText = userDisplayName;
         tg.ready();
     </script>
 </body>
