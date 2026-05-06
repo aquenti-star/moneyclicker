@@ -6,9 +6,7 @@
     <title>Star Clicker Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;900&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://app.adsgram.ai/js/adsgram-ad-sdk.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <script src="https://sad.adsgram.ai/js/sad.min.js?v=999"></script>
     <style>
         :root {
             --bg-body: #08080f; --bg-card: rgba(255, 255, 255, 0.04); --card-border: rgba(255, 255, 255, 0.08);
@@ -17,7 +15,6 @@
         }
         body.theme-grey { --color-accent: #777; --ad-btn-bg: #333; }
         body.theme-lime { --color-accent: #32ff7e; --ad-btn-bg: #1a4f31; }
-        body.theme-purple { --color-accent: #9d50bb; --ad-btn-bg: #6c5ce7; }
 
         body {
             background-color: var(--bg-body); color: var(--color-text-primary); font-family: 'Montserrat', sans-serif;
@@ -27,6 +24,7 @@
 
         .top-bar { position: absolute; top: 20px; left: 15px; right: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
         .theme-row { display: flex; gap: 8px; }
+        .lang-row { display: flex; gap: 6px; }
         .dot { width: 24px; height: 24px; border-radius: 7px; border: 2px solid white; cursor: pointer; }
         .lang-btn { background: var(--bg-card); border: 1px solid var(--card-border); color: white; font-family: 'Montserrat'; font-weight: 900; font-size: 11px; padding: 5px 10px; border-radius: 8px; }
 
@@ -44,26 +42,33 @@
         .progress-bg { width: 100%; height: 8px; background: var(--progress-bg); border-radius: 10px; overflow: hidden; }
         .progress-fill { height: 100%; background: var(--color-accent); width: 0%; transition: width 0.4s; box-shadow: 0 0 10px var(--color-accent); }
 
-        .ads-column { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-bottom: 15px; }
-        .ad-button { width: 100%; padding: 20px; border: none; border-radius: 22px; color: white; font-weight: 900; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--ad-btn-bg); transition: 0.2s; cursor: pointer; }
+        .ads-row { display: flex; gap: 10px; width: 100%; margin-bottom: 12px; }
+        .ad-button { flex: 1; padding: 18px 10px; border: none; border-radius: 22px; color: white; font-weight: 900; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        #ad-btn { background: var(--ad-btn-bg); }
+        #boost-btn { background: linear-gradient(135deg, #f093fb, #f5576c); }
         .ad-button:disabled { opacity: 0.5; filter: grayscale(1); }
 
         #toast { position: fixed; top: -120px; left: 50%; transform: translateX(-50%); background: var(--bg-card); border: 2px solid var(--color-accent); padding: 15px 20px; border-radius: 20px; z-index: 2000; transition: 0.5s; text-align: center; width: 85%; backdrop-filter: blur(10px); }
         #toast.show { top: 15px; }
 
+        #loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 3000; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--color-accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         .shop { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin: 10px 0; }
-        .upgrade { background: var(--bg-card); border: 1px solid var(--card-border); border-radius: 20px; padding: 15px; text-align: center; cursor: pointer; }
-        .click-area { padding: 40px; text-align: center; cursor: pointer; }
-        
-        .leader-item { display: flex; justify-content: space-between; padding: 14px 18px; background: var(--bg-card); border-radius: 16px; margin-bottom: 6px; font-size: 13px; }
-        .my-rank { border: 1px solid var(--color-accent) !important; background: rgba(157, 80, 187, 0.1); }
+        .upgrade { background: var(--bg-card); border: 1px solid var(--card-border); border-radius: 20px; padding: 15px; text-align: center; }
+        .click-area { padding: 30px; text-align: center; }
+        .leader-item { display: flex; justify-content: space-between; padding: 14px 18px; background: var(--bg-card); border-radius: 16px; margin-bottom: 6px; font-size: 12px; }
+        .my-rank { border: 1px solid var(--color-accent) !important; }
     </style>
 </head>
 <body class="theme-purple">
 
+    <div id="loader-overlay"><div class="spinner"></div><b id="wait-txt">Подождите...</b></div>
+
     <div id="toast">
-        <b id="t-reward-t">Награда получена!</b><br>
-        <span id="t-reward-m">+1000 ⭐</span>
+        <b id="t-reward-t">Награда получена!</b>
+        <span id="t-reward-m">+1000 ⭐ добавлено к балансу</span>
     </div>
 
     <div class="top-bar">
@@ -109,13 +114,9 @@
         <div class="progress-bg"><div class="progress-fill" id="pb"></div></div>
     </div>
 
-    <div class="ads-column">
-        <button id="ad-btn" class="ad-button" onclick="showAd()">
-            ▶ <span id="ad-btn-txt">СМОТРЕТЬ РЕКЛАМУ (+1000 ⭐)</span>
-        </button>
-        <button id="boost-btn" class="ad-button" onclick="showBoostAd()">
-            🚀 <span id="boost-btn-txt">БУСТ X2</span>
-        </button>
+    <div class="ads-row">
+        <button id="ad-btn" class="ad-button" onclick="showAd()">▶ <span id="ad-btn-txt">Реклама</span></button>
+        <button id="boost-btn" class="ad-button" onclick="showBoostAd()">🚀 <span id="boost-btn-txt">Буст x2</span></button>
     </div>
 
     <div class="shop">
@@ -123,14 +124,12 @@
         <div class="upgrade" onclick="buyUpgrade('auto')"><b id="up-ab">АВТО-БОТ</b><br><span id="a-cost">500</span> ⭐</div>
     </div>
 
-    <div class="card click-area" onclick="clickStar()">
-        <span style="font-size: 60px;">⭐</span>
-    </div>
+    <div class="card click-area" onclick="clickStar()"><span style="font-size: 60px;">⭐</span></div>
 
-    <div style="width: 100%; margin-top: 10px;">
+    <div style="width:100%">
         <b class="label" id="lbl-top">Топ игроков</b>
-        <div id="leaderboard-list" style="margin-top:10px;">
-            <div class="leader-item"><span>Подключение...</span></div>
+        <div id="leaderboard-content">
+            <div class="leader-item"><span>Загрузка топа...</span></div>
         </div>
     </div>
 
@@ -140,7 +139,7 @@
         const userDisplayName = tg.initDataUnsafe?.user?.first_name || "Player";
         const p = (key) => `u${userId}_${key}`;
 
-        // 1. ПЕРЕМЕННЫЕ ЗАГРУЖАЮТСЯ СРАЗУ
+        // ДАННЫЕ
         let balance = Number(localStorage.getItem(p('bal'))) || 0;
         let dpc = Number(localStorage.getItem(p('dpc'))) || 1;
         let dps = Number(localStorage.getItem(p('dps'))) || 0;
@@ -154,19 +153,18 @@
         let boostActive = false;
         let boostTimeLeft = 0;
 
+        const AdController = window.Adsgram.init({ blockId: "29401" });
         const i18n = {
-            ru: { bal: "Ваш баланс", goal: "Цель", mc: "МУЛЬТИКЛИК", ab: "АВТО-БОТ", top: "Топ игроков", s1: "Всего", s2: "Сегодня", s3: "За час", ad: "СМОТРЕТЬ РЕКЛАМУ (+1000 ⭐)", bst: "БУСТ X2" },
-            en: { bal: "Balance", goal: "Goal", mc: "MULTICLICK", ab: "AUTO-BOT", top: "Leaderboard", s1: "Total", s2: "Today", s3: "Hourly", ad: "WATCH AD (+1000 ⭐)", bst: "BOOST X2" }
+            ru: { bal: "Ваш баланс", goal: "Цель", mc: "МУЛЬТИКЛИК", ab: "АВТО-БОТ", top: "Топ игроков", wait: "Подождите...", s1: "Всего", s2: "Сегодня", s3: "За час", ad: "Реклама", bst: "Буст x2", rewT: "Награда получена!" },
+            en: { bal: "Balance", goal: "Goal", mc: "MULTICLICK", ab: "AUTO-BOT", top: "Leaderboard", wait: "Please wait...", s1: "Total", s2: "Today", s3: "Hourly", ad: "Ad", bst: "Boost x2", rewT: "Reward Received!" }
         };
 
-        const AdController = window.Adsgram.init({ blockId: "29401" });
-
-        function setTheme(t) { document.body.className = 'theme-' + t; localStorage.setItem(p('theme'), t); }
         function changeLang(l) { currentLang = l; localStorage.setItem(p('lang'), l); updateUI(); }
+        function setTheme(t) { document.body.className = 'theme-' + t; localStorage.setItem(p('theme'), t); }
 
-        function clickStar() {
-            balance += (boostActive ? dpc * 2 : dpc);
-            updateUI(); saveData();
+        function clickStar() { 
+            balance += (boostActive ? dpc * 2 : dpc); 
+            updateUI(); saveData(); 
         }
 
         function updateUI() {
@@ -176,16 +174,17 @@
             if (nowH !== lastHour) { hourlyViews = 0; lastHour = nowH; }
 
             document.getElementById('score').innerText = fmt(balance);
+            document.getElementById('c-cost').innerText = fmt(cCost);
+            document.getElementById('a-cost').innerText = fmt(aCost);
             document.getElementById('st-total').innerText = fmt(totalViews);
             document.getElementById('st-today').innerText = fmt(earnedToday);
             document.getElementById('st-hour').innerText = `${hourlyViews} / 1000`;
-            document.getElementById('c-cost').innerText = fmt(cCost);
-            document.getElementById('a-cost').innerText = fmt(aCost);
             document.getElementById('lbl-bal').innerText = t.bal;
             document.getElementById('lbl-top').innerText = t.top;
             document.getElementById('st-lbl-1').innerText = t.s1;
             document.getElementById('st-lbl-2').innerText = t.s2;
             document.getElementById('st-lbl-3').innerText = t.s3;
+            document.getElementById('wait-txt').innerText = t.wait;
             
             if(!document.getElementById('ad-btn').disabled) document.getElementById('ad-btn-txt').innerText = t.ad;
             if(!boostActive) document.getElementById('boost-btn-txt').innerText = t.bst;
@@ -198,14 +197,26 @@
         }
 
         function showAd() {
-            AdController.show().then((res) => {
-                if(res.done) { balance += 1000; totalViews++; earnedToday += 1000; hourlyViews++; showToast("+1000 ⭐"); updateUI(); saveData(); }
-            }).catch(() => {});
+            const btn = document.getElementById('ad-btn');
+            const overlay = document.getElementById('loader-overlay');
+            overlay.style.display = 'flex';
+            AdController.show().then((result) => {
+                overlay.style.display = 'none';
+                if (result.done) { balance += 1000; totalViews++; earnedToday += 1000; hourlyViews++; showToast("+1000 ⭐"); }
+                startCooldown('ad-btn', 'ad-btn-txt', i18n[currentLang].ad); updateUI(); saveData();
+            }).catch(() => { overlay.style.display = 'none'; btn.disabled = false; });
         }
 
         function showBoostAd() {
             if (boostActive) return;
-            AdController.show().then((res) => { if(res.done) activateBoost(); }).catch(() => {});
+            const btn = document.getElementById('boost-btn');
+            const overlay = document.getElementById('loader-overlay');
+            overlay.style.display = 'flex';
+            AdController.show().then((result) => {
+                overlay.style.display = 'none';
+                if (result.done) { activateBoost(); showToast("Буст x2 активен!"); }
+                else { btn.disabled = false; }
+            }).catch(() => { overlay.style.display = 'none'; btn.disabled = false; });
         }
 
         function activateBoost() {
@@ -213,9 +224,9 @@
             const txt = document.getElementById('boost-btn-txt');
             document.getElementById('boost-btn').disabled = true;
             const timer = setInterval(() => {
-                txt.innerText = `${boostTimeLeft}с`;
+                txt.innerText = `${boostTimeLeft}c`;
                 boostTimeLeft--;
-                if(boostTimeLeft < 0) { clearInterval(timer); boostActive = false; document.getElementById('boost-btn').disabled = false; updateUI(); }
+                if (boostTimeLeft < 0) { clearInterval(timer); boostActive = false; document.getElementById('boost-btn').disabled = false; updateUI(); }
             }, 1000);
         }
 
@@ -226,48 +237,58 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
+        function startCooldown(id, txtId, def) {
+            let s = 5; const b = document.getElementById(id); const t = document.getElementById(txtId);
+            const tm = setInterval(() => { t.innerText = `${s}c`; s--; if(s < 0) { clearInterval(tm); b.disabled = (hourlyViews >= 1000); updateUI(); } }, 1000);
+        }
+
         function saveData() {
-            localStorage.setItem(p('bal'), balance);
-            localStorage.setItem(p('dpc'), dpc); localStorage.setItem(p('cCost'), cCost);
-            localStorage.setItem(p('aCost'), aCost); localStorage.setItem(p('dps'), dps);
-            localStorage.setItem(p('stTotal'), totalViews); localStorage.setItem(p('stToday'), earnedToday);
-            localStorage.setItem(p('stHour'), hourlyViews); localStorage.setItem(p('lastH'), lastHour);
-            if (window.dbRef) { window.dbRef.set({ name: userDisplayName, score: balance }); }
+            localStorage.setItem(p('bal'), balance); localStorage.setItem(p('stTotal'), totalViews);
+            localStorage.setItem(p('stToday'), earnedToday); localStorage.setItem(p('stHour'), hourlyViews);
+            localStorage.setItem(p('lastH'), lastHour); localStorage.setItem(p('dpc'), dpc);
+            localStorage.setItem(p('cCost'), cCost); localStorage.setItem(p('aCost'), aCost); localStorage.setItem(p('dps'), dps);
         }
 
         function buyUpgrade(type) {
-            if(type === 'click' && balance >= cCost) { balance -= cCost; dpc++; cCost = Math.floor(cCost * 1.6); }
-            if(type === 'auto' && balance >= aCost) { balance -= aCost; dps++; aCost = Math.floor(aCost * 1.6); }
+            if (type === 'click' && balance >= cCost) { balance -= cCost; dpc += 1; cCost = Math.floor(cCost * 1.6); }
+            if (type === 'auto' && balance >= aCost) { balance -= aCost; dps += 1; aCost = Math.floor(aCost * 1.6); }
             updateUI(); saveData();
         }
 
-        setInterval(() => { if(dps > 0) { balance += dps; updateUI(); saveData(); } }, 1000);
+        // --- ЛОГИКА ТОПА (БЕЗ FIREBASE) ---
+        async function syncLeaderboard() {
+            const API_URL = "https://api.npoint.io/4e7d5830e09210218861"; // Публичный склад для теста
+            try {
+                // Пытаемся получить данные
+                const res = await fetch(API_URL);
+                let top = await res.json();
+                if (!Array.isArray(top)) top = [];
+                
+                // Добавляем/обновляем текущего игрока
+                const idx = top.findIndex(pl => pl.id === userId);
+                if (idx > -1) { if(balance > top[idx].score) top[idx].score = balance; }
+                else { top.push({ id: userId, name: userDisplayName, score: balance }); }
 
-        // СТАРТ
-        setTheme(localStorage.getItem(p('theme')) || 'purple');
-        updateUI();
-        tg.ready();
-
-        // FIREBASE (МЯГКОЕ ПОДКЛЮЧЕНИЕ)
-        try {
-            const firebaseConfig = { databaseURL: "https://magicclicker-7ff2a-default-rtdb.europe-west1.firebasedatabase.app/" };
-            firebase.initializeApp(firebaseConfig);
-            const database = firebase.database();
-            window.dbRef = database.ref('users/' + userId);
-
-            database.ref('users').orderByChild('score').limitToLast(10).on('value', (snap) => {
-                const data = snap.val();
-                if(!data) return;
-                const players = Object.values(data).sort((a,b) => b.score - a.score);
-                document.getElementById('leaderboard-list').innerHTML = players.map((pl, i) => `
-                    <div class="leader-item ${pl.name === userDisplayName ? 'my-rank' : ''}">
+                // Сортируем и рендерим
+                top.sort((a,b) => b.score - a.score);
+                const displayTop = top.slice(0, 10);
+                document.getElementById('leaderboard-content').innerHTML = displayTop.map((pl, i) => `
+                    <div class="leader-item ${pl.id === userId ? 'my-rank' : ''}">
                         <span>${i+1}. ${pl.name}</span><b>${Math.floor(pl.score).toLocaleString()}</b>
                     </div>
                 `).join('');
-            });
-        } catch (e) {
-            document.getElementById('leaderboard-list').innerHTML = '<div class="leader-item">Оффлайн</div>';
+            } catch (e) {
+                document.getElementById('leaderboard-content').innerHTML = '<div class="leader-item">Топ временно недоступен</div>';
+            }
         }
+
+        setInterval(() => { if (dps > 0) { balance += dps; updateUI(); saveData(); } }, 1000);
+        setInterval(syncLeaderboard, 30000); // Синхрон раз в 30 сек
+
+        setTheme(localStorage.getItem(p('theme')) || 'purple');
+        updateUI();
+        syncLeaderboard();
+        tg.ready();
     </script>
 </body>
 </html>
