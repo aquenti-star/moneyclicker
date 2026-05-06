@@ -3,77 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>AdsGram Test</title>
+    <title>Star Clicker</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
     <style>
-        body { background-color: #08080f; color: #fff; font-family: 'Montserrat', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .container { text-align: center; background: rgba(255, 255, 255, 0.05); padding: 40px; border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.1); width: 85%; box-sizing: border-box; }
-        #balance { font-size: 48px; font-weight: 900; color: #ffca28; margin: 20px 0; }
-        #ad-btn { background: linear-gradient(135deg, #6c5ce7, #a29bfe); color: white; border: none; padding: 20px; font-size: 16px; font-weight: 900; border-radius: 20px; cursor: pointer; transition: 0.3s; width: 100%; }
-        #ad-btn:disabled { background: #333; color: #777; cursor: not-allowed; }
-        .status { margin-top: 15px; font-size: 12px; color: rgba(255, 255, 255, 0.5); text-transform: uppercase; }
+        body {
+            background-color: #08080f;
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .card {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 40px 20px;
+            border-radius: 35px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 85%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        #balance {
+            font-size: 54px;
+            font-weight: 900;
+            color: #ffca28;
+            text-shadow: 0 0 20px rgba(255, 202, 40, 0.3);
+            margin: 10px 0 30px 0;
+        }
+
+        .label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.4);
+        }
+
+        #ad-btn {
+            background: linear-gradient(135deg, #6c5ce7, #8e44ad);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 22px;
+            font-size: 18px;
+            font-weight: 900;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(108, 92, 231, 0.3);
+        }
+
+        #ad-btn:active {
+            transform: scale(0.96);
+        }
+
+        #ad-btn:disabled {
+            background: #222;
+            color: #555;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        #status-msg {
+            margin-top: 20px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.3);
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="status">Твой баланс</div>
-        <div id="balance">0 ⭐</div>
-        <button id="ad-btn" onclick="runAd()">СМОТРЕТЬ РЕКЛАМУ</button>
-        <div id="cooldown-text" class="status">Готов к запуску</div>
+    <div class="card">
+        <div class="label">Баланс звёзд</div>
+        <div id="balance">0</div>
+        
+        <button id="ad-btn" onclick="startAdFlow()">ПОЛУЧИТЬ 1000 ⭐</button>
+        <div id="status-msg">Готов к работе</div>
     </div>
 
     <script>
-        const AdController = window.Adsgram.init({ blockId: "29573" });
-        let stars = Number(localStorage.getItem('test_stars')) || 0;
-        let isAdLoading = false; // Флаг для защиты от двойного клика
+        // Инициализируем твой первый блок
+        const AdController = window.Adsgram.init({ blockId: "29401" });
+        
+        // Загружаем баланс
+        let stars = Number(localStorage.getItem('user_stars')) || 0;
+        const balEl = document.getElementById('balance');
+        const btn = document.getElementById('ad-btn');
+        const msg = document.getElementById('status-msg');
+        
+        balEl.innerText = stars.toLocaleString();
 
-        document.getElementById('balance').innerText = stars + ' ⭐';
-
-        function runAd() {
-            if (isAdLoading) return; // Если уже грузим — выходим
-
-            const btn = document.getElementById('ad-btn');
-            const cdText = document.getElementById('cooldown-text');
-
-            isAdLoading = true;
+        function startAdFlow() {
+            // Блокируем кнопку сразу
             btn.disabled = true;
             btn.innerText = "ЗАГРУЗКА...";
-            cdText.innerText = "Связь с сервером...";
+            msg.innerText = "Запрос рекламы в AdsGram...";
 
             AdController.show().then((result) => {
+                // Если реклама прошла успешно (done: true)
                 if (result.done) {
                     stars += 1000;
-                    localStorage.setItem('test_stars', stars);
-                    document.getElementById('balance').innerText = stars + ' ⭐';
+                    localStorage.setItem('user_stars', stars);
+                    balEl.innerText = stars.toLocaleString();
+                    msg.innerText = "Награда начислена!";
+                } else {
+                    msg.innerText = "Реклама была прервана";
                 }
-            }).catch((error) => {
-                console.error("Ad error:", error);
-                // Если это ошибка "Attempt to call show", просто пишем юзеру подождать
-                alert("Реклама не готова. Попробуйте через 10 секунд.");
+            }).catch((err) => {
+                console.error(err);
+                msg.innerText = "Ошибка загрузки или пропуска";
             }).finally(() => {
-                isAdLoading = false;
-                startTimer(10); // Кулдаун 10 секунд в любом случае
+                // Включаем таймер на 10 секунд
+                runCooldown(10);
             });
         }
 
-        function startTimer(seconds) {
-            const btn = document.getElementById('ad-btn');
-            const cdText = document.getElementById('cooldown-text');
-            let timeLeft = seconds;
-
+        function runCooldown(sec) {
+            let left = sec;
             const timer = setInterval(() => {
-                btn.innerText = `ПАУЗА ${timeLeft}с`;
-                cdText.innerText = `Кулдаун системы...`;
-                timeLeft--;
-
-                if (timeLeft < 0) {
+                btn.disabled = true;
+                btn.innerText = `ПАУЗА ${left}с`;
+                left--;
+                
+                if (left < 0) {
                     clearInterval(timer);
                     btn.disabled = false;
-                    btn.innerText = "СМОТРЕТЬ РЕКЛАМУ";
-                    cdText.innerText = "Готов к запуску";
+                    btn.innerText = "ПОЛУЧИТЬ 1000 ⭐";
+                    msg.innerText = "Готов к работе";
                 }
             }, 1000);
         }
