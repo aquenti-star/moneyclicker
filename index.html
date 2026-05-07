@@ -154,7 +154,8 @@
         let hourlyViews = Number(localStorage.getItem(p('stHour'))) || 0;
         let lastHour = Number(localStorage.getItem(p('lastH'))) || new Date().getHours();
 
-        const AdController = window.Adsgram.init({ blockId: "29401" });
+        // НОВЫЙ БЛОК ID: 29573
+        const AdController = window.Adsgram.init({ blockId: "29573" });
 
         const i18n = {
             ru: { bal: "Ваш баланс", goal: "Цель", mc: "МУЛЬТИКЛИК", ab: "АВТО-БОТ", top: "Топ игроков", wait: "Подождите...", s1: "Всего", s2: "Сегодня", s3: "За час", ad: "Смотреть рекламу", rewT: "Награда получена!", rewM: "звёзд добавлено" },
