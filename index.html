@@ -5,19 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Star Clicker</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://sad.adsgram.ai/js/sad.min.js?v=16"></script>
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
         body {
             background: #000; color: #fff; font-family: sans-serif;
             display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0;
+            -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
         }
         #score { font-size: 50px; font-weight: bold; margin-bottom: 20px; }
         .star { font-size: 100px; cursor: pointer; transition: 0.1s; }
         .star:active { transform: scale(0.9); }
         .ad-btn {
             margin-top: 30px; background: #5865f2; border: none; color: white;
-            padding: 15px 30px; border-radius: 10px; font-weight: bold; font-size: 18px;
+            padding: 15px 30px; border-radius: 10px; font-weight: bold; font-size: 18px; cursor: pointer;
         }
+        .ad-btn:disabled { opacity: 0.5; }
     </style>
 </head>
 <body>
@@ -30,7 +32,7 @@
         const tg = window.Telegram.WebApp;
         let score = Number(localStorage.getItem('score')) || 0;
         
-        // ТОТ САМЫЙ ПЕРВЫЙ БЛОК
+        // Инициализация строго по документации
         const AdController = window.Adsgram.init({ blockId: "29401" });
 
         function updateUI() {
@@ -47,14 +49,19 @@
             const btn = document.getElementById('ad-btn');
             btn.disabled = true;
             
+            // Чистый вызов без параметров внутри show(), как в доках
             AdController.show().then((result) => {
+                // Проверяем завершение просмотра (done === true)
                 if (result.done) {
                     score += 1000;
                     updateUI();
                     localStorage.setItem('score', score);
                 }
-                btn.disabled = false;
-            }).catch(() => {
+            }).catch((err) => {
+                // Ловим ошибку, если реклама не загрузилась
+                console.log("Ad error:", err);
+            }).finally(() => {
+                // Разблокируем кнопку всегда, как рекомендует дока
                 btn.disabled = false;
             });
         }
