@@ -4,18 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Star Clicker App</title>
-    <link href="https://fonts.googleapis.com/css2?family=PT+Mono&display=swap" rel="stylesheet">
+    <!-- Подключаем Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Скрипт AdsGram -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
     <style>
         * {
             box-sizing: border-box;
-            font-family: 'PT Mono', monospace;
+            font-family: 'Montserrat', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         body {
-            background-color: #0d0d12;
-            color: #e0e0e0;
+            background-color: #0d0e12;
+            color: #ffffff;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -30,79 +34,180 @@
             max-width: 380px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 16px;
         }
 
+        /* Универсальный стиль для карточек */
         .card {
             background: #16161e;
-            border: 1px solid #2a2a3a;
-            border-radius: 20px;
-            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 16px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
         .card-title {
-            font-size: 11px;
+            font-size: 12px;
             color: #8888a0;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             margin-bottom: 8px;
         }
 
-        .balance-val {
-            font-size: 36px;
-            font-weight: bold;
-            color: #ffca28;
+        /* Баланс и Стрик */
+        .balance-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
         }
 
+        .balance-val {
+            font-size: 38px;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .star-icon {
+            color: #ffca28;
+            font-size: 32px;
+        }
+
+        .streak-badge {
+            background: rgba(108, 92, 231, 0.2);
+            color: #a29bfe;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Монета-кликер */
+        .coin-area {
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        .coin {
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle, #ffd54f 0%, #ffb300 100%);
+            border-radius: 50%;
+            border: 4px solid #fff3e0;
+            box-shadow: 0 0 25px rgba(255, 179, 0, 0.3), inset 0 -5px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: #fff;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .coin:active {
+            transform: scale(0.92);
+        }
+
+        /* Сетка статистики */
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
         }
 
-        .stat-card {
-            background: #16161e;
-            border: 1px solid #2a2a3a;
-            border-radius: 16px;
-            padding: 15px 10px;
-            text-align: center;
-        }
-
         .stat-val {
-            font-size: 18px;
-            color: #fff;
-            margin-top: 5px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-top: 4px;
         }
 
+        /* Задания */
+        .task-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a1a24;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 12px 16px;
+        }
+
+        .task-info {
+            text-align: left;
+        }
+
+        .task-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .task-reward {
+            font-size: 12px;
+            color: #ffca28;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .task-btn {
+            background: #2d3436;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        
+        .task-btn:active { transform: scale(0.95); }
+        .task-btn.done {
+            background: rgba(255,255,255,0.1);
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Кнопка рекламы */
         #ad-btn {
-            background: transparent;
-            color: #a29bfe;
-            border: 1px solid #a29bfe;
-            border-radius: 18px;
-            padding: 18px;
-            font-size: 14px;
+            background: #6c5ce7;
+            color: #ffffff;
+            border: none;
+            border-radius: 16px;
+            padding: 20px;
+            font-size: 16px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.2s ease;
             width: 100%;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
         }
 
         #ad-btn:active {
-            background: rgba(162, 155, 254, 0.1);
-            transform: scale(0.98);
+            transform: scale(0.97);
+            box-shadow: 0 2px 8px rgba(108, 92, 231, 0.3);
         }
 
         #ad-btn:disabled {
-            border-color: #444;
-            color: #555;
+            background: #2d3436;
+            color: #636e72;
+            box-shadow: none;
             cursor: not-allowed;
             transform: none;
         }
 
         .status-text {
-            font-size: 10px;
-            color: #666;
+            font-size: 11px;
+            font-weight: 600;
+            color: #636e72;
             text-align: center;
         }
     </style>
@@ -110,55 +215,118 @@
 <body>
 
     <div class="container">
-        <!-- Баланс -->
-        <div class="card">
+        
+        <!-- Баланс и Стрик -->
+        <div class="card balance-wrapper">
             <div class="card-title">Текущий баланс</div>
-            <div id="balance" class="balance-val">0 ⭐</div>
+            <div class="balance-val">
+                <span class="star-icon">★</span>
+                <span id="balance">0</span>
+            </div>
+            <div class="streak-badge" id="streak-display">Стрик: x1.00</div>
+        </div>
+
+        <!-- Зона кликера -->
+        <div class="coin-area">
+            <div class="coin" onclick="coinClick()">★</div>
+        </div>
+
+        <!-- Блок заданий -->
+        <div class="task-row">
+            <div class="task-info">
+                <div class="task-name">Подписка на канал</div>
+                <div class="task-reward">+1000 ★</div>
+            </div>
+            <button id="task-btn" class="task-btn" onclick="completeTask()">Выполнить</button>
         </div>
 
         <!-- Статистика -->
         <div class="stats-grid">
-            <div class="stat-card">
-                <div class="card-title">Просмотров всего</div>
+            <div class="card">
+                <div class="card-title">Всего реклам</div>
                 <div id="total-views" class="stat-val">0</div>
             </div>
-            <div class="stat-card">
+            <div class="card">
                 <div class="card-title">За сегодня</div>
                 <div id="today-views" class="stat-val">0</div>
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-title">Заработано с рекламы за всё время</div>
-            <div id="total-earned" class="stat-val" style="color: #ffca28;">0 ⭐</div>
+        <!-- Кнопка рекламы -->
+        <div style="margin-top: 5px;">
+            <button id="ad-btn" onclick="startAd()">СМОТРЕТЬ РЕКЛАМУ</button>
+            <div id="status" class="status-text" style="margin-top: 10px;">Готов к запуску</div>
         </div>
 
-        <!-- Кнопка -->
-        <button id="ad-btn" onclick="startAd()">СМОТРЕТЬ РЕКЛАМУ</button>
-        <div id="status" class="status-text">Готов к запуску</div>
     </div>
 
     <script>
+        // Инициализация AdsGram
         const AdController = window.Adsgram.init({ blockId: "29401" });
 
-        // Данные
+        // Базовые настройки наград
+        const BASE_AD_REWARD = 1000;
+        const TASK_REWARD = 1000;
+
+        // Данные из localStorage (Сохраняются навсегда)
         let balance = Number(localStorage.getItem('user_balance')) || 0;
         let totalViews = Number(localStorage.getItem('total_views')) || 0;
         let totalEarned = Number(localStorage.getItem('total_earned')) || 0;
+        let isTaskDone = localStorage.getItem('task_tg_sub') === 'true';
         
         // Проверка сброса дневных просмотров
         const todayKey = 'today_views_' + new Date().toISOString().slice(0, 10);
         let todayViews = Number(localStorage.getItem(todayKey)) || 0;
 
+        // Стрик (НЕ сохраняется в localStorage, сбрасывается при обновлении страницы)
+        let streak = 1.00;
+
         function updateUI() {
-            document.getElementById('balance').innerText = balance.toLocaleString() + ' ⭐';
+            document.getElementById('balance').innerText = balance.toLocaleString();
             document.getElementById('total-views').innerText = totalViews;
             document.getElementById('today-views').innerText = todayViews;
-            document.getElementById('total-earned').innerText = totalEarned.toLocaleString() + ' ⭐';
+            document.getElementById('streak-display').innerText = `Стрик: x${streak.toFixed(2)}`;
+            
+            // Обновление состояния кнопки задания
+            const taskBtn = document.getElementById('task-btn');
+            if (isTaskDone) {
+                taskBtn.innerText = "Выполнено";
+                taskBtn.classList.add("done");
+                taskBtn.disabled = true;
+            }
         }
 
-        updateUI();
+        // Логика кликера по монете
+        function coinClick() {
+            balance += 1;
+            localStorage.setItem('user_balance', balance);
+            
+            // Легкая вибрация при клике (работает на большинстве смартфонов через Telegram WebApp)
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(15); 
+            }
+            updateUI();
+        }
 
+        // Логика задания
+        function completeTask() {
+            if (isTaskDone) return;
+
+            // Открываем фейковую ссылку (можно заменить на реальный канал позже)
+            window.open('https://t.me', '_blank');
+
+            // Начисляем награду
+            balance += TASK_REWARD;
+            isTaskDone = true;
+            
+            // Сохраняем
+            localStorage.setItem('user_balance', balance);
+            localStorage.setItem('task_tg_sub', 'true');
+            
+            updateUI();
+        }
+
+        // Логика просмотра рекламы
         function startAd() {
             const btn = document.getElementById('ad-btn');
             const status = document.getElementById('status');
@@ -169,29 +337,37 @@
 
             AdController.show().then((result) => {
                 if (result.done) {
-                    balance += 1000;
+                    // Считаем награду с учетом текущего стрика
+                    const finalReward = Math.floor(BASE_AD_REWARD * streak);
+                    
+                    balance += finalReward;
                     totalViews += 1;
                     todayViews += 1;
-                    totalEarned += 1000;
+                    totalEarned += finalReward;
+                    
+                    // Увеличиваем стрик (максимум до x10.00)
+                    streak = Math.min(streak + 0.01, 10.00);
 
+                    // Сохраняем всё кроме стрика
                     localStorage.setItem('user_balance', balance);
                     localStorage.setItem('total_views', totalViews);
                     localStorage.setItem(todayKey, todayViews);
                     localStorage.setItem('total_earned', totalEarned);
 
                     updateUI();
-                    status.innerText = "Успешно! +1000 ⭐";
+                    status.innerText = `Успешно! +${finalReward} ★`;
                 } else {
-                    status.innerText = "Реклама была закрыта";
+                    status.innerText = "Реклама была закрыта раньше времени";
                 }
             }).catch((err) => {
                 console.error(err);
-                status.innerText = "Ошибка загрузки рекламы";
+                status.innerText = "Ошибка загрузки рекламы. Попробуйте позже.";
             }).finally(() => {
                 runCooldown(10);
             });
         }
 
+        // Таймер кулдауна кнопки
         function runCooldown(sec) {
             const btn = document.getElementById('ad-btn');
             const status = document.getElementById('status');
@@ -205,10 +381,16 @@
                     clearInterval(timer);
                     btn.disabled = false;
                     btn.innerText = "СМОТРЕТЬ РЕКЛАМУ";
-                    status.innerText = "Готов к запуску";
+                    // Оставляем текст успеха/ошибки, если он был
+                    if (status.innerText.includes("Запрос")) {
+                        status.innerText = "Готов к запуску";
+                    }
                 }
             }, 1000);
         }
+
+        // Первичная отрисовка при загрузке
+        updateUI();
     </script>
 </body>
 </html>
