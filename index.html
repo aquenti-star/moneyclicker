@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Ruby Miner</title>
-    <!-- Подключаем шрифт Montserrat -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <!-- Скрипт AdsGram -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
         * {
@@ -37,7 +36,6 @@
             gap: 14px;
         }
 
-        /* Шапка с балансом */
         .balance-card {
             background: linear-gradient(135deg, #141013 0%, #1c0c10 100%);
             border: 1px solid rgba(255, 30, 66, 0.2);
@@ -57,7 +55,7 @@
         }
 
         .balance-val {
-            font-size: 36px;
+            font-size: 34px;
             font-weight: 800;
             color: #ff2a4d;
             display: flex;
@@ -74,30 +72,26 @@
             font-weight: 600;
         }
 
-        /* Зона кликера с рубином */
         .miner-area {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 10px 0;
-            position: relative;
         }
 
         .ruby-btn {
             width: 160px;
             height: 160px;
-            background: radial-gradient(circle, #ff2a4d 0%, #8b0000 70%, #4a0000 100%);
+            background: radial-gradient(circle, #2a080f 0%, #120407 100%);
             border-radius: 50%;
-            border: 4px solid rgba(255, 100, 120, 0.4);
-            box-shadow: 0 0 40px rgba(255, 42, 77, 0.3), inset 0 -8px 20px rgba(0, 0, 0, 0.5);
+            border: 4px solid rgba(255, 42, 77, 0.3);
+            box-shadow: 0 0 40px rgba(255, 42, 77, 0.2), inset 0 0 20px rgba(0, 0, 0, 0.8);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 75px;
             cursor: pointer;
             transition: transform 0.08s ease, box-shadow 0.08s ease;
-            position: relative;
         }
 
         .ruby-btn:active {
@@ -127,34 +121,9 @@
             color: #887075;
             margin-top: 6px;
             font-weight: 600;
-        }
-
-        /* Меню кнопок (Задания и Вывод) */
-        .menu-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .action-btn {
-            background: #141013;
-            border: 1px solid rgba(255, 30, 66, 0.2);
-            color: #fff;
-            padding: 14px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-            transition: 0.2s;
             text-align: center;
         }
 
-        .action-btn:active {
-            background: rgba(255, 30, 66, 0.15);
-            transform: scale(0.97);
-        }
-
-        /* Кнопка вывода во всю ширину */
         .withdraw-btn {
             background: linear-gradient(135deg, #cc0029 0%, #ff2a4d 100%);
             border: none;
@@ -169,10 +138,6 @@
             text-align: center;
         }
 
-        .withdraw-btn:active {
-            transform: scale(0.97);
-        }
-
         .withdraw-btn:disabled {
             background: #1c1416;
             color: #554448;
@@ -180,7 +145,6 @@
             cursor: not-allowed;
         }
 
-        /* Модальные окна / Блоки */
         .section-box {
             background: #120e11;
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -194,7 +158,6 @@
             color: #c0a8ad;
             margin-bottom: 10px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .task-item {
@@ -231,12 +194,6 @@
             cursor: pointer;
         }
 
-        .task-go-btn.done {
-            background: #241c20;
-            color: #66555a;
-            cursor: not-allowed;
-        }
-
         .status-text {
             font-size: 11px;
             font-weight: 600;
@@ -250,7 +207,6 @@
 
     <div class="container">
         
-        <!-- Баланс -->
         <div class="balance-card">
             <div class="card-title">Баланс рубинов</div>
             <div class="balance-val">
@@ -260,74 +216,84 @@
             <div class="ruble-eq" id="usd-eq">≈ $0.0000</div>
         </div>
 
-        <!-- Зона кликера с рубином -->
         <div class="miner-area">
-            <div class="ruby-btn" onclick="tapRuby()">💎</div>
+            <div class="ruby-btn" onclick="tapRuby()">
+                <!-- SVG Рубин высокого качества -->
+                <svg viewBox="0 0 100 100" width="100" height="100">
+                    <defs>
+                        <linearGradient id="rubyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#ff2a4d" />
+                            <stop offset="50%" stop-color="#cc0029" />
+                            <stop offset="100%" stop-color="#5a0010" />
+                        </linearGradient>
+                        <linearGradient id="facetTop" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#ff6b8b" stop-opacity="0.8"/>
+                            <stop offset="100%" stop-color="#ff2a4d" stop-opacity="0.2"/>
+                        </linearGradient>
+                    </defs>
+                    <polygon points="30,15 70,15 90,40 50,90 10,40" fill="url(#rubyGrad)" stroke="#ff6b8b" stroke-width="1.5"/>
+                    <polygon points="30,15 70,15 50,40" fill="url(#facetTop)"/>
+                    <polygon points="30,15 10,40 50,40" fill="#a80020" opacity="0.6"/>
+                    <polygon points="70,15 90,40 50,40" fill="#e60032" opacity="0.7"/>
+                    <polygon points="10,40 50,90 50,40" fill="#800015" opacity="0.8"/>
+                    <polygon points="90,40 50,90 50,40" fill="#b30024" opacity="0.7"/>
+                </svg>
+            </div>
             <div style="width: 100%;">
                 <div class="progress-container">
                     <div id="ad-progress" class="progress-bar"></div>
                 </div>
-                <div id="click-status" class="click-counter-text" style="text-align: center;">До рекламы: 30 / 30</div>
+                <div id="click-status" class="click-counter-text">До рекламы: 30 / 30</div>
             </div>
         </div>
 
-        <!-- Статус бар -->
         <div id="status" class="status-text">Готов к майнингу</div>
 
-        <!-- Кнопка вывода -->
-        <button id="withdraw-btn" class="withdraw-btn" onclick="openWithdrawModal()" disabled>ВЫВЕСТИ (МИН. 10 000 💎)</button>
+        <button id="withdraw-btn" class="withdraw-btn" onclick="requestWithdraw()" disabled>ВЫВЕСТИ (МИН. 10 000 💎)</button>
 
-        <!-- Блок заданий -->
         <div class="section-box">
             <div class="section-header">Задания за рекламу</div>
             
             <div class="task-item">
                 <div class="task-info">
-                    <div>Подписка на Telegram канал</div>
-                    <div>+500 💎</div>
+                    <div>Подписка на канал (+10 💎)</div>
+                    <div>Просмотр рекламы + подписка</div>
                 </div>
-                <button id="task-1" class="task-go-btn" onclick="doTask(1, 'https://t.me')">Выполнить</button>
+                <button id="task-sub" class="task-go-btn" onclick="doSubTask()">Выполнить</button>
             </div>
 
             <div class="task-item">
                 <div class="task-info">
-                    <div>Посетить сайт партнера</div>
-                    <div>+300 💎</div>
+                    <div>Посмотреть 10 реклам (+100 💎)</div>
+                    <div id="ads-counter">Прогресс: 0 / 10</div>
                 </div>
-                <button id="task-2" class="task-go-btn" onclick="doTask(2, 'https://google.com')">Выполнить</button>
+                <button id="task-ads" class="task-go-btn" onclick="doAdsTask()">Смотреть</button>
             </div>
         </div>
 
     </div>
 
     <script>
-        // Инициализация AdsGram SDK
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
         const AdController = window.Adsgram.init({ blockId: "29401" });
 
-        // Данные из localStorage
         let balance = Number(localStorage.getItem('ruby_balance')) || 0;
         let clicksBeforeAd = Number(localStorage.getItem('ruby_clicks')) || 0;
-        const CLICK_TARGET = 30; // Реклама каждые 30 кликов
-
-        let tasksDone = {
-            1: localStorage.getItem('task_1_done') === 'true',
-            2: localStorage.getItem('task_2_done') === 'true'
-        };
+        let adsWatchedCount = Number(localStorage.getItem('ads_watched_count')) || 0;
+        const CLICK_TARGET = 30;
 
         function updateUI() {
             document.getElementById('balance').innerText = balance.toLocaleString();
-            
-            // Расчет эквивалента в USD (1 рубин = 0.0001$)
             let usdValue = (balance * 0.0001).toFixed(4);
             document.getElementById('usd-eq').innerText = `≈ $${usdValue}`;
 
-            // Прогресс бар до рекламы
             let remaining = CLICK_TARGET - (clicksBeforeAd % CLICK_TARGET);
             let percent = ((clicksBeforeAd % CLICK_TARGET) / CLICK_TARGET) * 100;
             document.getElementById('ad-progress').style.width = percent + '%';
             document.getElementById('click-status').innerText = `До рекламы: ${remaining} клик.`;
 
-            // Кнопка вывода (доступна от 10 000 рубинов)
             const withdrawBtn = document.getElementById('withdraw-btn');
             if (balance >= 10000) {
                 withdrawBtn.disabled = false;
@@ -337,18 +303,9 @@
                 withdrawBtn.innerText = `ВЫВЕСТИ (ЕЩЕ ${ (10000 - balance).toLocaleString() } 💎)`;
             }
 
-            // Статус заданий
-            for (let id in tasksDone) {
-                const btn = document.getElementById(`task-${id}`);
-                if (tasksDone[id]) {
-                    btn.innerText = "Выполнено";
-                    btn.classList.add("done");
-                    btn.disabled = true;
-                }
-            }
+            document.getElementById('ads-counter').innerText = `Прогресс: ${adsWatchedCount} / 10`;
         }
 
-        // Клик по рубину
         function tapRuby() {
             balance += 1;
             clicksBeforeAd += 1;
@@ -356,105 +313,93 @@
             localStorage.setItem('ruby_balance', balance);
             localStorage.setItem('ruby_clicks', clicksBeforeAd);
 
-            // Вибрация на телефоне при тапе
             if (window.navigator && window.navigator.vibrate) {
                 window.navigator.vibrate(20);
             }
 
             updateUI();
 
-            // Проверяем, наступил ли момент показа рекламы каждые 30 кликов
             if (clicksBeforeAd % CLICK_TARGET === 0) {
                 showMandatoryAd();
             }
         }
 
-        // Принудительный показ рекламы каждые 30 кликов
         function showMandatoryAd() {
             const status = document.getElementById('status');
-            status.innerText = "⚡ Загрузка обязательной рекламы за майнинг...";
+            status.innerText = "⚡ Загрузка рекламы за майнинг...";
 
             AdController.show().then((result) => {
                 if (result.done) {
-                    status.innerText = "✅ Реклама просмотрена! Майним дальше.";
+                    status.innerText = "✅ Реклама просмотрена! +1 рубин бонус.";
+                    balance += 1;
+                    updateUI();
                 } else {
-                    status.innerText = "⚠️ Реклама была закрыта до конца.";
+                    status.innerText = "⚠️ Реклама закрыта до конца.";
                 }
             }).catch((err) => {
-                console.error(err);
                 status.innerText = "❌ Ошибка загрузки рекламы.";
             });
         }
 
-        // Выполнение заданий (сначала просмотр 1 рекламы, потом открытие ссылки)
-        function doTask(taskId, url) {
-            if (tasksDone[taskId]) return;
-
+        // Задание с подпиской (+10 рубинов)
+        function doSubTask() {
             const status = document.getElementById('status');
-            status.innerText = "📺 Загрузка рекламы для выполнения задания...";
+            status.innerText = "📺 Загрузка рекламы для подписки...";
 
             AdController.show().then((result) => {
                 if (result.done) {
-                    // Награда за задание
-                    const reward = taskId === 1 ? 500 : 300;
-                    balance += reward;
-                    tasksDone[taskId] = true;
-
+                    status.innerText = "✅ Переход в канал. Подпишитесь и проверьте в боте!";
+                    window.open('https://t.me/tvo_kanal_username', '_blank');
+                    // Начисляем бонус
+                    balance += 10;
                     localStorage.setItem('ruby_balance', balance);
-                    localStorage.setItem(`task_${taskId}_done`, 'true');
-
                     updateUI();
-                    status.innerText = `🎉 Задание выполнено! +${reward} 💎`;
-
-                    // Открываем ссылку задания
-                    window.open(url, '_blank');
                 } else {
-                    status.innerText = "⚠️ Вы закрыли рекламу, награда не получена.";
+                    status.innerText = "⚠️ Реклама закрыта.";
                 }
             }).catch((err) => {
-                console.error(err);
-                status.innerText = "❌ Ошибка показа рекламы для задания.";
+                status.innerText = "❌ Ошибка рекламы.";
             });
         }
 
-        // Логика вывода (нужно посмотреть 3 рекламы подряд)
-        let adsWatchedForWithdraw = 0;
-
-        function openWithdrawModal() {
-            if (balance < 10000) return;
-
+        // Задание: посмотреть 10 реклам (+100 рубинов)
+        function doAdsTask() {
+            if (adsWatchedCount >= 10) return;
             const status = document.getElementById('status');
-            adsWatchedForWithdraw = 0;
-            
-            status.innerText = `🛡️ Защита вывода: просмотрите рекламный ролик (1/3)...`;
-            runWithdrawAdFlow();
-        }
+            status.innerText = `📺 Просмотр ролика (${adsWatchedCount + 1}/10)...`;
 
-        function runWithdrawAdFlow() {
             AdController.show().then((result) => {
                 if (result.done) {
-                    adsWatchedForWithdraw++;
-                    if (adsWatchedForWithdraw < 3) {
-                        document.getElementById('status').innerText = `🛡️ Проверено! Ролик ${adsWatchedForWithdraw}/3. Смотрим следующий...`;
-                        runWithdrawAdFlow(); // показываем следующий из 3
-                    } else {
-                        // Все 3 рекламы просмотрены! Списываем баланс и оформляем вывод
-                        balance -= 10000;
+                    adsWatchedCount++;
+                    localStorage.setItem('ads_watched_count', adsWatchedCount);
+                    updateUI();
+
+                    if (adsWatchedCount >= 10) {
+                        balance += 100;
                         localStorage.setItem('ruby_balance', balance);
                         updateUI();
-                        document.getElementById('status').innerText = "🚀 Заявка на вывод $1.00 успешно создана! Ожидайте выплату.";
-                        alert("Заявка успешно отправлена администратору!");
+                        status.innerText = "🎉 Задание выполнено! Получено +100 💎";
+                    } else {
+                        status.innerText = `✅ Отлично! Осталось посмотреть ${10 - adsWatchedCount} ролик(ов).`;
                     }
                 } else {
-                    document.getElementById('status').innerText = "❌ Вывод отменен: нужно досмотреть все 3 рекламы.";
+                    status.innerText = "⚠️ Ролик не был досмотрен.";
                 }
             }).catch((err) => {
-                console.error(err);
-                document.getElementById('status').innerText = "❌ Ошибка при проверке вывода.";
+                status.innerText = "❌ Ошибка показа рекламы.";
             });
         }
 
-        // Запуск при старте
+        // Вывод через бота
+        function requestWithdraw() {
+            if (balance < 10000) return;
+            let wallet = prompt("Введите ваш TON кошелек или данные CryptoBot для получения $1.00:");
+            if (!wallet) return;
+
+            // Перенаправляем пользователя в бота с командой /withdraw кошелек
+            window.location.href = `https://t.me/rubyminerwithdraw_bot?start=withdraw_${wallet}`;
+        }
+
         updateUI();
     </script>
 </body>
