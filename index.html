@@ -201,6 +201,129 @@
             text-align: center;
             min-height: 15px;
         }
+
+        /* Модальное окно вывода */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: #120e11;
+            border: 1px solid rgba(255, 42, 77, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            max-width: 340px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .modal-title {
+            font-size: 14px;
+            font-weight: 800;
+            text-align: center;
+            text-transform: uppercase;
+            color: #ff2a4d;
+        }
+
+        .networks-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .network-card {
+            background: #1a1317;
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .network-card.active {
+            border-color: #ff2a4d;
+            background: rgba(255, 42, 77, 0.05);
+        }
+
+        .network-icon-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .network-icon-row img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        .network-name {
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .modal-input {
+            width: 100%;
+            background: #1a1317;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 12px;
+            color: white;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .modal-input:focus {
+            border-color: #ff2a4d;
+        }
+
+        .preview-notice {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.4);
+            text-align: center;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .modal-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-cancel {
+            background: #1c1416;
+            color: #887075;
+        }
+
+        .btn-confirm {
+            background: #ff2a4d;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -218,7 +341,6 @@
 
         <div class="miner-area">
             <div class="ruby-btn" onclick="tapRuby()">
-                <!-- SVG Рубин высокого качества -->
                 <svg viewBox="0 0 100 100" width="100" height="100">
                     <defs>
                         <linearGradient id="rubyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -249,28 +371,75 @@
 
         <div id="status" class="status-text">Готов к майнингу</div>
 
-        <button id="withdraw-btn" class="withdraw-btn" onclick="requestWithdraw()" disabled>ВЫВЕСТИ (МИН. 10 000 💎)</button>
+        <button id="withdraw-btn" class="withdraw-btn" onclick="openWithdrawModal()" disabled>ВЫВЕСТИ (МИН. 10 000 💎)</button>
 
         <div class="section-box">
             <div class="section-header">Задания за рекламу</div>
             
             <div class="task-item">
                 <div class="task-info">
-                    <div>Подписка на канал (+10 💎)</div>
-                    <div>Просмотр рекламы + подписка</div>
+                    <div>10 реклам (+100 💎)</div>
+                    <div id="ads-10-counter">Прогресс: 0 / 10</div>
                 </div>
-                <button id="task-sub" class="task-go-btn" onclick="doSubTask()">Выполнить</button>
+                <button class="task-go-btn" onclick="doAdsTask(10)">Смотреть</button>
             </div>
 
             <div class="task-item">
                 <div class="task-info">
-                    <div>Посмотреть 10 реклам (+100 💎)</div>
-                    <div id="ads-counter">Прогресс: 0 / 10</div>
+                    <div>30 реклам (+300 💎)</div>
+                    <div id="ads-30-counter">Прогресс: 0 / 30</div>
                 </div>
-                <button id="task-ads" class="task-go-btn" onclick="doAdsTask()">Смотреть</button>
+                <button class="task-go-btn" onclick="doAdsTask(30)">Смотреть</button>
+            </div>
+
+            <div class="task-item">
+                <div class="task-info">
+                    <div>50 реклам (+500 💎)</div>
+                    <div id="ads-50-counter">Прогресс: 0 / 50</div>
+                </div>
+                <button class="task-go-btn" onclick="doAdsTask(50)">Смотреть</button>
             </div>
         </div>
 
+    </div>
+
+    <!-- Модальное окно вывода (Предпросмотр) -->
+    <div id="withdraw-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-title">Вывод средств</div>
+            
+            <div class="networks-grid">
+                <div class="network-card active" id="net-trc20" onclick="selectNetwork('trc20')">
+                    <div class="network-icon-row">
+                        <img src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=035" alt="USDT">
+                        <img src="https://cryptologos.cc/logos/tron-trx-logo.svg?v=035" alt="TRX">
+                    </div>
+                    <div class="network-name">USDT TRC20</div>
+                </div>
+                
+                <div class="network-card" id="net-ton" onclick="selectNetwork('ton')">
+                    <div class="network-icon-row">
+                        <img src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=035" alt="USDT">
+                        <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg?v=035" alt="TON">
+                    </div>
+                    <div class="network-name">USDT TON</div>
+                </div>
+            </div>
+
+            <input type="text" id="wallet-input" class="modal-input" placeholder="Введите адрес кошелька...">
+            
+            <input type="number" id="amount-input" class="modal-input" placeholder="Сумма (мин. 10 000 💎)" oninput="calcWithdrawUsd(this.value)">
+            <div class="ruble-eq" id="modal-usd-calc" style="text-align: center; font-size: 11px;">Вы получите: $0.00</div>
+
+            <div class="preview-notice">
+                ⚠️ Внимание: Вывод на данный момент недоступен (режим предпросмотра).
+            </div>
+
+            <div class="modal-btns">
+                <button class="modal-btn btn-cancel" onclick="closeWithdrawModal()">Отмена</button>
+                <button class="modal-btn btn-confirm" onclick="submitWithdraw()">Запросить</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -281,8 +450,15 @@
 
         let balance = Number(localStorage.getItem('ruby_balance')) || 0;
         let clicksBeforeAd = Number(localStorage.getItem('ruby_clicks')) || 0;
-        let adsWatchedCount = Number(localStorage.getItem('ads_watched_count')) || 0;
+        
+        let ads10Count = Number(localStorage.getItem('ads_10_count')) || 0;
+        let ads30Count = Number(localStorage.getItem('ads_30_count')) || 0;
+        let ads50Count = Number(localStorage.getItem('ads_50_count')) || 0;
+
         const CLICK_TARGET = 30;
+        let isAdShowing = false;
+        let lastClickTime = 0;
+        let selectedNetwork = 'trc20';
 
         function updateUI() {
             document.getElementById('balance').innerText = balance.toLocaleString();
@@ -303,10 +479,19 @@
                 withdrawBtn.innerText = `ВЫВЕСТИ (ЕЩЕ ${ (10000 - balance).toLocaleString() } 💎)`;
             }
 
-            document.getElementById('ads-counter').innerText = `Прогресс: ${adsWatchedCount} / 10`;
+            document.getElementById('ads-10-counter').innerText = `Прогресс: ${ads10Count} / 10`;
+            document.getElementById('ads-30-counter').innerText = `Прогресс: ${ads30Count} / 30`;
+            document.getElementById('ads-50-counter').innerText = `Прогресс: ${ads50Count} / 50`;
         }
 
+        // Кулдаун 1 сек + блокировка во время рекламы
         function tapRuby() {
+            if (isAdShowing) return;
+
+            let now = Date.now();
+            if (now - lastClickTime < 1000) return; // КД 1 секунда
+            lastClickTime = now;
+
             balance += 1;
             clicksBeforeAd += 1;
 
@@ -325,10 +510,12 @@
         }
 
         function showMandatoryAd() {
+            isAdShowing = true;
             const status = document.getElementById('status');
             status.innerText = "⚡ Загрузка рекламы за майнинг...";
 
             AdController.show().then((result) => {
+                isAdShowing = false;
                 if (result.done) {
                     status.innerText = "✅ Реклама просмотрена! +1 рубин бонус.";
                     balance += 1;
@@ -337,67 +524,93 @@
                     status.innerText = "⚠️ Реклама закрыта до конца.";
                 }
             }).catch((err) => {
+                isAdShowing = false;
                 status.innerText = "❌ Ошибка загрузки рекламы.";
             });
         }
 
-        // Задание с подпиской (+10 рубинов)
-        function doSubTask() {
+        // Универсальная функция для выполнения заданий с рекламой
+        function doAdsTask(targetCount) {
+            if (isAdShowing) return;
+
+            let currentCount = targetCount === 10 ? ads10Count : (targetCount === 30 ? ads30Count : ads50Count);
+            if (currentCount >= targetCount) {
+                alert("✅ Задание уже выполнено!");
+                return;
+            }
+
+            isAdShowing = true;
             const status = document.getElementById('status');
-            status.innerText = "📺 Загрузка рекламы для подписки...";
+            status.innerText = `📺 Просмотр ролика (${currentCount + 1}/${targetCount})...`;
 
             AdController.show().then((result) => {
+                isAdShowing = false;
                 if (result.done) {
-                    status.innerText = "✅ Переход в канал. Подпишитесь и проверьте в боте!";
-                    window.open('https://t.me/tvo_kanal_username', '_blank');
-                    // Начисляем бонус
-                    balance += 10;
+                    if (targetCount === 10) {
+                        ads10Count++;
+                        localStorage.setItem('ads_10_count', ads10Count);
+                        if (ads10Count >= 10) { balance += 100; alert("🎉 Задание выполнено! +100 💎"); }
+                    } else if (targetCount === 30) {
+                        ads30Count++;
+                        localStorage.setItem('ads_30_count', ads30Count);
+                        if (ads30Count >= 30) { balance += 300; alert("🎉 Задание выполнено! +300 💎"); }
+                    } else if (targetCount === 50) {
+                        ads50Count++;
+                        localStorage.setItem('ads_50_count', ads50Count);
+                        if (ads50Count >= 50) { balance += 500; alert("🎉 Задание выполнено! +500 💎"); }
+                    }
+
                     localStorage.setItem('ruby_balance', balance);
                     updateUI();
+                    status.innerText = "✅ Ролик успешно засчитан!";
                 } else {
-                    status.innerText = "⚠️ Реклама закрыта.";
+                    status.innerText = "⚠️ Ролик не был досмотрен до конца.";
                 }
             }).catch((err) => {
-                status.innerText = "❌ Ошибка рекламы.";
-            });
-        }
-
-        // Задание: посмотреть 10 реклам (+100 рубинов)
-        function doAdsTask() {
-            if (adsWatchedCount >= 10) return;
-            const status = document.getElementById('status');
-            status.innerText = `📺 Просмотр ролика (${adsWatchedCount + 1}/10)...`;
-
-            AdController.show().then((result) => {
-                if (result.done) {
-                    adsWatchedCount++;
-                    localStorage.setItem('ads_watched_count', adsWatchedCount);
-                    updateUI();
-
-                    if (adsWatchedCount >= 10) {
-                        balance += 100;
-                        localStorage.setItem('ruby_balance', balance);
-                        updateUI();
-                        status.innerText = "🎉 Задание выполнено! Получено +100 💎";
-                    } else {
-                        status.innerText = `✅ Отлично! Осталось посмотреть ${10 - adsWatchedCount} ролик(ов).`;
-                    }
-                } else {
-                    status.innerText = "⚠️ Ролик не был досмотрен.";
-                }
-            }).catch((err) => {
+                isAdShowing = false;
                 status.innerText = "❌ Ошибка показа рекламы.";
             });
         }
 
-        // Вывод через бота
-        function requestWithdraw() {
+        // Управление модальным окном вывода
+        function openWithdrawModal() {
             if (balance < 10000) return;
-            let wallet = prompt("Введите ваш TON кошелек или данные CryptoBot для получения $1.00:");
-            if (!wallet) return;
+            document.getElementById('withdraw-modal').style.display = 'flex';
+            document.getElementById('amount-input').value = balance;
+            calcWithdrawUsd(balance);
+        }
 
-            // Перенаправляем пользователя в бота с командой /withdraw кошелек
-            window.location.href = `https://t.me/rubyminerwithdraw_bot?start=withdraw_${wallet}`;
+        function closeWithdrawModal() {
+            document.getElementById('withdraw-modal').style.display = 'none';
+        }
+
+        function selectNetwork(net) {
+            selectedNetwork = net;
+            document.getElementById('net-trc20').classList.toggle('active', net === 'trc20');
+            document.getElementById('net-ton').classList.toggle('active', net === 'ton');
+        }
+
+        function calcWithdrawUsd(val) {
+            let amount = Number(val) || 0;
+            let usd = (amount * 0.0001).toFixed(2);
+            document.getElementById('modal-usd-calc').innerText = `Сеть: ${selectedNetwork.toUpperCase()} | Вы получите: $${usd}`;
+        }
+
+        function submitWithdraw() {
+            let wallet = document.getElementById('wallet-input').value.trim();
+            let amount = Number(document.getElementById('amount-input').value);
+
+            if (!wallet) {
+                alert("Введите адрес кошелька!");
+                return;
+            }
+            if (amount < 10000 || amount > balance) {
+                alert("Неверная сумма для вывода (минумум 10 000 💎)!");
+                return;
+            }
+
+            alert("⚠️ Режим предпросмотра: Вывод временно недоступен. Скоро будет подключен!");
+            closeWithdrawModal();
         }
 
         updateUI();
