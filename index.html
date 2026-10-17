@@ -6,7 +6,6 @@
     <title>Ruby Miner</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <style>
         * {
@@ -136,13 +135,7 @@
             box-shadow: 0 4px 20px rgba(255, 42, 77, 0.3);
             transition: 0.2s;
             text-align: center;
-        }
-
-        .withdraw-btn:disabled {
-            background: #1c1416;
-            color: #554448;
-            box-shadow: none;
-            cursor: not-allowed;
+            width: 100%;
         }
 
         .section-box {
@@ -202,11 +195,11 @@
             min-height: 15px;
         }
 
-        /* Модальное окно вывода */
+        /* Модальное окно предпросмотра вывода */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             display: none;
             align-items: center;
             justify-content: center;
@@ -296,7 +289,7 @@
             color: rgba(255, 255, 255, 0.4);
             text-align: center;
             font-weight: 600;
-            line-height: 1.3;
+            line-height: 1.4;
         }
 
         .modal-btns {
@@ -371,7 +364,8 @@
 
         <div id="status" class="status-text">Готов к майнингу</div>
 
-        <button id="withdraw-btn" class="withdraw-btn" onclick="openWithdrawModal()" disabled>ВЫВЕСТИ (МИН. 10 000 💎)</button>
+        <!-- Кнопка вывода доступна ВСЕГДА для предпросмотра -->
+        <button id="withdraw-btn" class="withdraw-btn" onclick="openWithdrawModal()">ВЫВЕСТИ СРЕДСТВА</button>
 
         <div class="section-box">
             <div class="section-header">Задания за рекламу</div>
@@ -381,7 +375,7 @@
                     <div>10 реклам (+100 💎)</div>
                     <div id="ads-10-counter">Прогресс: 0 / 10</div>
                 </div>
-                <button class="task-go-btn" onclick="doAdsTask(10)">Смотреть</button>
+                <button class="task-go-btn" id="btn-task-10" onclick="startAdTask(10)">Смотреть</button>
             </div>
 
             <div class="task-item">
@@ -389,7 +383,7 @@
                     <div>30 реклам (+300 💎)</div>
                     <div id="ads-30-counter">Прогресс: 0 / 30</div>
                 </div>
-                <button class="task-go-btn" onclick="doAdsTask(30)">Смотреть</button>
+                <button class="task-go-btn" id="btn-task-30" onclick="startAdTask(30)">Смотреть</button>
             </div>
 
             <div class="task-item">
@@ -397,7 +391,7 @@
                     <div>50 реклам (+500 💎)</div>
                     <div id="ads-50-counter">Прогресс: 0 / 50</div>
                 </div>
-                <button class="task-go-btn" onclick="doAdsTask(50)">Смотреть</button>
+                <button class="task-go-btn" id="btn-task-50" onclick="startAdTask(50)">Смотреть</button>
             </div>
         </div>
 
@@ -428,24 +422,21 @@
 
             <input type="text" id="wallet-input" class="modal-input" placeholder="Введите адрес кошелька...">
             
-            <input type="number" id="amount-input" class="modal-input" placeholder="Сумма (мин. 10 000 💎)" oninput="calcWithdrawUsd(this.value)">
+            <input type="number" id="amount-input" class="modal-input" placeholder="Сумма для вывода" oninput="calcWithdrawUsd(this.value)">
             <div class="ruble-eq" id="modal-usd-calc" style="text-align: center; font-size: 11px;">Вы получите: $0.00</div>
 
             <div class="preview-notice">
-                ⚠️ Внимание: Вывод на данный момент недоступен (режим предпросмотра).
+                ⚠️ Режим предпросмотра: функционал вывода находится в разработке и временно недоступен.
             </div>
 
             <div class="modal-btns">
-                <button class="modal-btn btn-cancel" onclick="closeWithdrawModal()">Отмена</button>
+                <button class="modal-btn btn-cancel" onclick="closeWithdrawModal()">Закрыть</button>
                 <button class="modal-btn btn-confirm" onclick="submitWithdraw()">Запросить</button>
             </div>
         </div>
     </div>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-
         const AdController = window.Adsgram.init({ blockId: "29401" });
 
         let balance = Number(localStorage.getItem('ruby_balance')) || 0;
@@ -456,8 +447,6 @@
         let ads50Count = Number(localStorage.getItem('ads_50_count')) || 0;
 
         const CLICK_TARGET = 30;
-        let isAdShowing = false;
-        let lastClickTime = 0;
         let selectedNetwork = 'trc20';
 
         function updateUI() {
@@ -470,26 +459,18 @@
             document.getElementById('ad-progress').style.width = percent + '%';
             document.getElementById('click-status').innerText = `До рекламы: ${remaining} клик.`;
 
-            const withdrawBtn = document.getElementById('withdraw-btn');
-            if (balance >= 10000) {
-                withdrawBtn.disabled = false;
-                withdrawBtn.innerText = "ВЫВЕСТИ СРЕДСТВА ($1.00)";
-            } else {
-                withdrawBtn.disabled = true;
-                withdrawBtn.innerText = `ВЫВЕСТИ (ЕЩЕ ${ (10000 - balance).toLocaleString() } 💎)`;
-            }
-
             document.getElementById('ads-10-counter').innerText = `Прогресс: ${ads10Count} / 10`;
             document.getElementById('ads-30-counter').innerText = `Прогресс: ${ads30Count} / 30`;
             document.getElementById('ads-50-counter').innerText = `Прогресс: ${ads50Count} / 50`;
         }
 
-        // Кулдаун 1 сек + блокировка во время рекламы
-        function tapRuby() {
-            if (isAdShowing) return;
+        updateUI();
 
+        // Клик по рубину (с защитой через таймер как в твоем рабочем коде)
+        let lastClickTime = 0;
+        function tapRuby() {
             let now = Date.now();
-            if (now - lastClickTime < 1000) return; // КД 1 секунда
+            if (now - lastClickTime < 400) return; // Легкая защита от лютого спама
             lastClickTime = now;
 
             balance += 1;
@@ -498,53 +479,45 @@
             localStorage.setItem('ruby_balance', balance);
             localStorage.setItem('ruby_clicks', clicksBeforeAd);
 
-            if (window.navigator && window.navigator.vibrate) {
-                window.navigator.vibrate(20);
-            }
-
             updateUI();
 
             if (clicksBeforeAd % CLICK_TARGET === 0) {
-                showMandatoryAd();
+                triggerAdForMining();
             }
         }
 
-        function showMandatoryAd() {
-            isAdShowing = true;
+        // Реклама за майнинг (по аналогии со старым рабочим кодом с таймером)
+        function triggerAdForMining() {
             const status = document.getElementById('status');
-            status.innerText = "⚡ Загрузка рекламы за майнинг...";
+            status.innerText = "Загрузка обязательной рекламы...";
 
             AdController.show().then((result) => {
-                isAdShowing = false;
                 if (result.done) {
-                    status.innerText = "✅ Реклама просмотрена! +1 рубин бонус.";
                     balance += 1;
+                    localStorage.setItem('ruby_balance', balance);
                     updateUI();
+                    status.innerText = "Реклама просмотрена! +1 рубин";
                 } else {
-                    status.innerText = "⚠️ Реклама закрыта до конца.";
+                    status.innerText = "Реклама была закрыта";
                 }
             }).catch((err) => {
-                isAdShowing = false;
-                status.innerText = "❌ Ошибка загрузки рекламы.";
+                console.error(err);
+                status.innerText = "Ошибка загрузки рекламы";
             });
         }
 
-        // Универсальная функция для выполнения заданий с рекламой
-        function doAdsTask(targetCount) {
-            if (isAdShowing) return;
-
+        // Универсальная функция рекламных заданий (как в старом чистом коде)
+        function startAdTask(targetCount) {
             let currentCount = targetCount === 10 ? ads10Count : (targetCount === 30 ? ads30Count : ads50Count);
             if (currentCount >= targetCount) {
                 alert("✅ Задание уже выполнено!");
                 return;
             }
 
-            isAdShowing = true;
             const status = document.getElementById('status');
-            status.innerText = `📺 Просмотр ролика (${currentCount + 1}/${targetCount})...`;
+            status.innerText = `Запрос ролика (${currentCount + 1}/${targetCount})...`;
 
             AdController.show().then((result) => {
-                isAdShowing = false;
                 if (result.done) {
                     if (targetCount === 10) {
                         ads10Count++;
@@ -562,19 +535,18 @@
 
                     localStorage.setItem('ruby_balance', balance);
                     updateUI();
-                    status.innerText = "✅ Ролик успешно засчитан!";
+                    status.innerText = "Ролик засчитан!";
                 } else {
-                    status.innerText = "⚠️ Ролик не был досмотрен до конца.";
+                    status.innerText = "Реклама была закрыта";
                 }
             }).catch((err) => {
-                isAdShowing = false;
-                status.innerText = "❌ Ошибка показа рекламы.";
+                console.error(err);
+                status.innerText = "Ошибка загрузки рекламы";
             });
         }
 
-        // Управление модальным окном вывода
+        // Модальное окно вывода (предпросмотр)
         function openWithdrawModal() {
-            if (balance < 10000) return;
             document.getElementById('withdraw-modal').style.display = 'flex';
             document.getElementById('amount-input').value = balance;
             calcWithdrawUsd(balance);
@@ -598,22 +570,13 @@
 
         function submitWithdraw() {
             let wallet = document.getElementById('wallet-input').value.trim();
-            let amount = Number(document.getElementById('amount-input').value);
-
             if (!wallet) {
                 alert("Введите адрес кошелька!");
                 return;
             }
-            if (amount < 10000 || amount > balance) {
-                alert("Неверная сумма для вывода (минумум 10 000 💎)!");
-                return;
-            }
-
-            alert("⚠️ Режим предпросмотра: Вывод временно недоступен. Скоро будет подключен!");
+            alert("⚠️ Режим предпросмотра: Заявка создана (симуляция).");
             closeWithdrawModal();
         }
-
-        updateUI();
     </script>
 </body>
 </html>
