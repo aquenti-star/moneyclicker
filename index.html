@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Star Clicker App</title>
-    <!-- Подключаем Montserrat -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Ruby Miner</title>
+    <!-- Подключаем шрифт Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <!-- Скрипт AdsGram -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
@@ -18,12 +18,12 @@
         }
 
         body {
-            background-color: #0d0e12;
+            background-color: #08080a;
             color: #ffffff;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             min-height: 100vh;
             margin: 0;
             padding: 20px;
@@ -34,181 +34,215 @@
             max-width: 380px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
         }
 
-        /* Универсальный стиль для карточек */
-        .card {
-            background: #16161e;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            padding: 16px;
+        /* Шапка с балансом */
+        .balance-card {
+            background: linear-gradient(135deg, #141013 0%, #1c0c10 100%);
+            border: 1px solid rgba(255, 30, 66, 0.2);
+            border-radius: 16px;
+            padding: 20px;
             text-align: center;
+            box-shadow: 0 8px 25px rgba(255, 30, 66, 0.08);
         }
 
         .card-title {
-            font-size: 12px;
-            color: #8888a0;
+            font-size: 11px;
+            color: #a0888c;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-        }
-
-        /* Баланс и Стрик */
-        .balance-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
         }
 
         .balance-val {
-            font-size: 38px;
-            font-weight: 700;
-            color: #ffffff;
+            font-size: 36px;
+            font-weight: 800;
+            color: #ff2a4d;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
+            text-shadow: 0 0 15px rgba(255, 42, 77, 0.3);
         }
 
-        .star-icon {
-            color: #ffca28;
-            font-size: 32px;
-        }
-
-        .streak-badge {
-            background: rgba(108, 92, 231, 0.2);
-            color: #a29bfe;
-            padding: 4px 10px;
-            border-radius: 20px;
+        .ruble-eq {
             font-size: 12px;
-            font-weight: 700;
+            color: #706065;
+            margin-top: 4px;
+            font-weight: 600;
         }
 
-        /* Монета-кликер */
-        .coin-area {
+        /* Зона кликера с рубином */
+        .miner-area {
             display: flex;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
-            padding: 20px 0;
+            padding: 10px 0;
+            position: relative;
         }
 
-        .coin {
-            width: 140px;
-            height: 140px;
-            background: radial-gradient(circle, #ffd54f 0%, #ffb300 100%);
+        .ruby-btn {
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, #ff2a4d 0%, #8b0000 70%, #4a0000 100%);
             border-radius: 50%;
-            border: 4px solid #fff3e0;
-            box-shadow: 0 0 25px rgba(255, 179, 0, 0.3), inset 0 -5px 15px rgba(0,0,0,0.2);
+            border: 4px solid rgba(255, 100, 120, 0.4);
+            box-shadow: 0 0 40px rgba(255, 42, 77, 0.3), inset 0 -8px 20px rgba(0, 0, 0, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 60px;
-            color: #fff;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            font-size: 75px;
             cursor: pointer;
-            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.08s ease, box-shadow 0.08s ease;
+            position: relative;
         }
 
-        .coin:active {
+        .ruby-btn:active {
             transform: scale(0.92);
+            box-shadow: 0 0 20px rgba(255, 42, 77, 0.5);
         }
 
-        /* Сетка статистики */
-        .stats-grid {
+        .progress-container {
+            width: 100%;
+            background: #161214;
+            border-radius: 8px;
+            height: 8px;
+            overflow: hidden;
+            margin-top: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #8b0000, #ff2a4d);
+            width: 0%;
+            transition: width 0.2s ease;
+        }
+
+        .click-counter-text {
+            font-size: 11px;
+            color: #887075;
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        /* Меню кнопок (Задания и Вывод) */
+        .menu-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
         }
 
-        .stat-val {
-            font-size: 20px;
+        .action-btn {
+            background: #141013;
+            border: 1px solid rgba(255, 30, 66, 0.2);
+            color: #fff;
+            padding: 14px;
+            border-radius: 12px;
             font-weight: 700;
-            color: #ffffff;
-            margin-top: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
         }
 
-        /* Задания */
-        .task-row {
+        .action-btn:active {
+            background: rgba(255, 30, 66, 0.15);
+            transform: scale(0.97);
+        }
+
+        /* Кнопка вывода во всю ширину */
+        .withdraw-btn {
+            background: linear-gradient(135deg, #cc0029 0%, #ff2a4d 100%);
+            border: none;
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(255, 42, 77, 0.3);
+            transition: 0.2s;
+            text-align: center;
+        }
+
+        .withdraw-btn:active {
+            transform: scale(0.97);
+        }
+
+        .withdraw-btn:disabled {
+            background: #1c1416;
+            color: #554448;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* Модальные окна / Блоки */
+        .section-box {
+            background: #120e11;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 14px;
+        }
+
+        .section-header {
+            font-size: 12px;
+            font-weight: 700;
+            color: #c0a8ad;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .task-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #1a1a24;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            padding: 12px 16px;
+            background: #1a1317;
+            padding: 10px 12px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255, 30, 66, 0.1);
         }
 
-        .task-info {
-            text-align: left;
-        }
-
-        .task-name {
-            font-size: 13px;
-            font-weight: 600;
-            color: #fff;
-        }
-
-        .task-reward {
+        .task-info div:first-child {
             font-size: 12px;
-            color: #ffca28;
+            font-weight: 700;
+        }
+
+        .task-info div:last-child {
+            font-size: 10px;
+            color: #ff2a4d;
             font-weight: 600;
             margin-top: 2px;
         }
 
-        .task-btn {
-            background: #2d3436;
-            color: #fff;
+        .task-go-btn {
+            background: #ff2a4d;
+            color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        
-        .task-btn:active { transform: scale(0.95); }
-        .task-btn.done {
-            background: rgba(255,255,255,0.1);
-            color: #666;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Кнопка рекламы */
-        #ad-btn {
-            background: #6c5ce7;
-            color: #ffffff;
-            border: none;
-            border-radius: 16px;
-            padding: 20px;
-            font-size: 16px;
+            font-size: 11px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s ease;
-            width: 100%;
-            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
         }
 
-        #ad-btn:active {
-            transform: scale(0.97);
-            box-shadow: 0 2px 8px rgba(108, 92, 231, 0.3);
-        }
-
-        #ad-btn:disabled {
-            background: #2d3436;
-            color: #636e72;
-            box-shadow: none;
+        .task-go-btn.done {
+            background: #241c20;
+            color: #66555a;
             cursor: not-allowed;
-            transform: none;
         }
 
         .status-text {
             font-size: 11px;
             font-weight: 600;
-            color: #636e72;
+            color: #706065;
             text-align: center;
+            min-height: 15px;
         }
     </style>
 </head>
@@ -216,180 +250,211 @@
 
     <div class="container">
         
-        <!-- Баланс и Стрик -->
-        <div class="card balance-wrapper">
-            <div class="card-title">Текущий баланс</div>
+        <!-- Баланс -->
+        <div class="balance-card">
+            <div class="card-title">Баланс рубинов</div>
             <div class="balance-val">
-                <span class="star-icon">★</span>
+                <span>💎</span>
                 <span id="balance">0</span>
             </div>
-            <div class="streak-badge" id="streak-display">Стрик: x1.00</div>
+            <div class="ruble-eq" id="usd-eq">≈ $0.0000</div>
         </div>
 
-        <!-- Зона кликера -->
-        <div class="coin-area">
-            <div class="coin" onclick="coinClick()">★</div>
+        <!-- Зона кликера с рубином -->
+        <div class="miner-area">
+            <div class="ruby-btn" onclick="tapRuby()">💎</div>
+            <div style="width: 100%;">
+                <div class="progress-container">
+                    <div id="ad-progress" class="progress-bar"></div>
+                </div>
+                <div id="click-status" class="click-counter-text" style="text-align: center;">До рекламы: 30 / 30</div>
+            </div>
         </div>
+
+        <!-- Статус бар -->
+        <div id="status" class="status-text">Готов к майнингу</div>
+
+        <!-- Кнопка вывода -->
+        <button id="withdraw-btn" class="withdraw-btn" onclick="openWithdrawModal()" disabled>ВЫВЕСТИ (МИН. 10 000 💎)</button>
 
         <!-- Блок заданий -->
-        <div class="task-row">
-            <div class="task-info">
-                <div class="task-name">Подписка на канал</div>
-                <div class="task-reward">+1000 ★</div>
+        <div class="section-box">
+            <div class="section-header">Задания за рекламу</div>
+            
+            <div class="task-item">
+                <div class="task-info">
+                    <div>Подписка на Telegram канал</div>
+                    <div>+500 💎</div>
+                </div>
+                <button id="task-1" class="task-go-btn" onclick="doTask(1, 'https://t.me')">Выполнить</button>
             </div>
-            <button id="task-btn" class="task-btn" onclick="completeTask()">Выполнить</button>
-        </div>
 
-        <!-- Статистика -->
-        <div class="stats-grid">
-            <div class="card">
-                <div class="card-title">Всего реклам</div>
-                <div id="total-views" class="stat-val">0</div>
+            <div class="task-item">
+                <div class="task-info">
+                    <div>Посетить сайт партнера</div>
+                    <div>+300 💎</div>
+                </div>
+                <button id="task-2" class="task-go-btn" onclick="doTask(2, 'https://google.com')">Выполнить</button>
             </div>
-            <div class="card">
-                <div class="card-title">За сегодня</div>
-                <div id="today-views" class="stat-val">0</div>
-            </div>
-        </div>
-
-        <!-- Кнопка рекламы -->
-        <div style="margin-top: 5px;">
-            <button id="ad-btn" onclick="startAd()">СМОТРЕТЬ РЕКЛАМУ</button>
-            <div id="status" class="status-text" style="margin-top: 10px;">Готов к запуску</div>
         </div>
 
     </div>
 
     <script>
-        // Инициализация AdsGram
+        // Инициализация AdsGram SDK
         const AdController = window.Adsgram.init({ blockId: "29401" });
 
-        // Базовые настройки наград
-        const BASE_AD_REWARD = 1000;
-        const TASK_REWARD = 1000;
+        // Данные из localStorage
+        let balance = Number(localStorage.getItem('ruby_balance')) || 0;
+        let clicksBeforeAd = Number(localStorage.getItem('ruby_clicks')) || 0;
+        const CLICK_TARGET = 30; // Реклама каждые 30 кликов
 
-        // Данные из localStorage (Сохраняются навсегда)
-        let balance = Number(localStorage.getItem('user_balance')) || 0;
-        let totalViews = Number(localStorage.getItem('total_views')) || 0;
-        let totalEarned = Number(localStorage.getItem('total_earned')) || 0;
-        let isTaskDone = localStorage.getItem('task_tg_sub') === 'true';
-        
-        // Проверка сброса дневных просмотров
-        const todayKey = 'today_views_' + new Date().toISOString().slice(0, 10);
-        let todayViews = Number(localStorage.getItem(todayKey)) || 0;
-
-        // Стрик (НЕ сохраняется в localStorage, сбрасывается при обновлении страницы)
-        let streak = 1.00;
+        let tasksDone = {
+            1: localStorage.getItem('task_1_done') === 'true',
+            2: localStorage.getItem('task_2_done') === 'true'
+        };
 
         function updateUI() {
             document.getElementById('balance').innerText = balance.toLocaleString();
-            document.getElementById('total-views').innerText = totalViews;
-            document.getElementById('today-views').innerText = todayViews;
-            document.getElementById('streak-display').innerText = `Стрик: x${streak.toFixed(2)}`;
             
-            // Обновление состояния кнопки задания
-            const taskBtn = document.getElementById('task-btn');
-            if (isTaskDone) {
-                taskBtn.innerText = "Выполнено";
-                taskBtn.classList.add("done");
-                taskBtn.disabled = true;
+            // Расчет эквивалента в USD (1 рубин = 0.0001$)
+            let usdValue = (balance * 0.0001).toFixed(4);
+            document.getElementById('usd-eq').innerText = `≈ $${usdValue}`;
+
+            // Прогресс бар до рекламы
+            let remaining = CLICK_TARGET - (clicksBeforeAd % CLICK_TARGET);
+            let percent = ((clicksBeforeAd % CLICK_TARGET) / CLICK_TARGET) * 100;
+            document.getElementById('ad-progress').style.width = percent + '%';
+            document.getElementById('click-status').innerText = `До рекламы: ${remaining} клик.`;
+
+            // Кнопка вывода (доступна от 10 000 рубинов)
+            const withdrawBtn = document.getElementById('withdraw-btn');
+            if (balance >= 10000) {
+                withdrawBtn.disabled = false;
+                withdrawBtn.innerText = "ВЫВЕСТИ СРЕДСТВА ($1.00)";
+            } else {
+                withdrawBtn.disabled = true;
+                withdrawBtn.innerText = `ВЫВЕСТИ (ЕЩЕ ${ (10000 - balance).toLocaleString() } 💎)`;
+            }
+
+            // Статус заданий
+            for (let id in tasksDone) {
+                const btn = document.getElementById(`task-${id}`);
+                if (tasksDone[id]) {
+                    btn.innerText = "Выполнено";
+                    btn.classList.add("done");
+                    btn.disabled = true;
+                }
             }
         }
 
-        // Логика кликера по монете
-        function coinClick() {
+        // Клик по рубину
+        function tapRuby() {
             balance += 1;
-            localStorage.setItem('user_balance', balance);
-            
-            // Легкая вибрация при клике (работает на большинстве смартфонов через Telegram WebApp)
+            clicksBeforeAd += 1;
+
+            localStorage.setItem('ruby_balance', balance);
+            localStorage.setItem('ruby_clicks', clicksBeforeAd);
+
+            // Вибрация на телефоне при тапе
             if (window.navigator && window.navigator.vibrate) {
-                window.navigator.vibrate(15); 
+                window.navigator.vibrate(20);
             }
+
             updateUI();
+
+            // Проверяем, наступил ли момент показа рекламы каждые 30 кликов
+            if (clicksBeforeAd % CLICK_TARGET === 0) {
+                showMandatoryAd();
+            }
         }
 
-        // Логика задания
-        function completeTask() {
-            if (isTaskDone) return;
-
-            // Открываем фейковую ссылку (можно заменить на реальный канал позже)
-            window.open('https://t.me', '_blank');
-
-            // Начисляем награду
-            balance += TASK_REWARD;
-            isTaskDone = true;
-            
-            // Сохраняем
-            localStorage.setItem('user_balance', balance);
-            localStorage.setItem('task_tg_sub', 'true');
-            
-            updateUI();
-        }
-
-        // Логика просмотра рекламы
-        function startAd() {
-            const btn = document.getElementById('ad-btn');
+        // Принудительный показ рекламы каждые 30 кликов
+        function showMandatoryAd() {
             const status = document.getElementById('status');
-
-            btn.disabled = true;
-            btn.innerText = "ЗАГРУЗКА...";
-            status.innerText = "Запрос рекламного блока...";
+            status.innerText = "⚡ Загрузка обязательной рекламы за майнинг...";
 
             AdController.show().then((result) => {
                 if (result.done) {
-                    // Считаем награду с учетом текущего стрика
-                    const finalReward = Math.floor(BASE_AD_REWARD * streak);
-                    
-                    balance += finalReward;
-                    totalViews += 1;
-                    todayViews += 1;
-                    totalEarned += finalReward;
-                    
-                    // Увеличиваем стрик (максимум до x10.00)
-                    streak = Math.min(streak + 0.01, 10.00);
-
-                    // Сохраняем всё кроме стрика
-                    localStorage.setItem('user_balance', balance);
-                    localStorage.setItem('total_views', totalViews);
-                    localStorage.setItem(todayKey, todayViews);
-                    localStorage.setItem('total_earned', totalEarned);
-
-                    updateUI();
-                    status.innerText = `Успешно! +${finalReward} ★`;
+                    status.innerText = "✅ Реклама просмотрена! Майним дальше.";
                 } else {
-                    status.innerText = "Реклама была закрыта раньше времени";
+                    status.innerText = "⚠️ Реклама была закрыта до конца.";
                 }
             }).catch((err) => {
                 console.error(err);
-                status.innerText = "Ошибка загрузки рекламы. Попробуйте позже.";
-            }).finally(() => {
-                runCooldown(10);
+                status.innerText = "❌ Ошибка загрузки рекламы.";
             });
         }
 
-        // Таймер кулдауна кнопки
-        function runCooldown(sec) {
-            const btn = document.getElementById('ad-btn');
+        // Выполнение заданий (сначала просмотр 1 рекламы, потом открытие ссылки)
+        function doTask(taskId, url) {
+            if (tasksDone[taskId]) return;
+
             const status = document.getElementById('status');
-            let left = sec;
+            status.innerText = "📺 Загрузка рекламы для выполнения задания...";
 
-            const timer = setInterval(() => {
-                btn.innerText = `ПАУЗА (${left}с)`;
-                left--;
+            AdController.show().then((result) => {
+                if (result.done) {
+                    // Награда за задание
+                    const reward = taskId === 1 ? 500 : 300;
+                    balance += reward;
+                    tasksDone[taskId] = true;
 
-                if (left < 0) {
-                    clearInterval(timer);
-                    btn.disabled = false;
-                    btn.innerText = "СМОТРЕТЬ РЕКЛАМУ";
-                    // Оставляем текст успеха/ошибки, если он был
-                    if (status.innerText.includes("Запрос")) {
-                        status.innerText = "Готов к запуску";
-                    }
+                    localStorage.setItem('ruby_balance', balance);
+                    localStorage.setItem(`task_${taskId}_done`, 'true');
+
+                    updateUI();
+                    status.innerText = `🎉 Задание выполнено! +${reward} 💎`;
+
+                    // Открываем ссылку задания
+                    window.open(url, '_blank');
+                } else {
+                    status.innerText = "⚠️ Вы закрыли рекламу, награда не получена.";
                 }
-            }, 1000);
+            }).catch((err) => {
+                console.error(err);
+                status.innerText = "❌ Ошибка показа рекламы для задания.";
+            });
         }
 
-        // Первичная отрисовка при загрузке
+        // Логика вывода (нужно посмотреть 3 рекламы подряд)
+        let adsWatchedForWithdraw = 0;
+
+        function openWithdrawModal() {
+            if (balance < 10000) return;
+
+            const status = document.getElementById('status');
+            adsWatchedForWithdraw = 0;
+            
+            status.innerText = `🛡️ Защита вывода: просмотрите рекламный ролик (1/3)...`;
+            runWithdrawAdFlow();
+        }
+
+        function runWithdrawAdFlow() {
+            AdController.show().then((result) => {
+                if (result.done) {
+                    adsWatchedForWithdraw++;
+                    if (adsWatchedForWithdraw < 3) {
+                        document.getElementById('status').innerText = `🛡️ Проверено! Ролик ${adsWatchedForWithdraw}/3. Смотрим следующий...`;
+                        runWithdrawAdFlow(); // показываем следующий из 3
+                    } else {
+                        // Все 3 рекламы просмотрены! Списываем баланс и оформляем вывод
+                        balance -= 10000;
+                        localStorage.setItem('ruby_balance', balance);
+                        updateUI();
+                        document.getElementById('status').innerText = "🚀 Заявка на вывод $1.00 успешно создана! Ожидайте выплату.";
+                        alert("Заявка успешно отправлена администратору!");
+                    }
+                } else {
+                    document.getElementById('status').innerText = "❌ Вывод отменен: нужно досмотреть все 3 рекламы.";
+                }
+            }).catch((err) => {
+                console.error(err);
+                document.getElementById('status').innerText = "❌ Ошибка при проверке вывода.";
+            });
+        }
+
+        // Запуск при старте
         updateUI();
     </script>
 </body>
