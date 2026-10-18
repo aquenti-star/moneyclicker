@@ -3,23 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Star Clicker App</title>
-    <link href="https://fonts.googleapis.com/css2?family=PT+Mono&display=swap" rel="stylesheet">
+    <title>Ruby Miner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
     <style>
         * {
             box-sizing: border-box;
-            font-family: 'PT Mono', monospace;
+            font-family: 'Montserrat', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         body {
-            background-color: #0d0d12;
-            color: #e0e0e0;
+            background-color: #08080a;
+            color: #ffffff;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             min-height: 100vh;
             margin: 0;
             padding: 20px;
@@ -30,184 +32,550 @@
             max-width: 380px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 14px;
         }
 
-        .card {
-            background: #16161e;
-            border: 1px solid #2a2a3a;
-            border-radius: 20px;
+        .balance-card {
+            background: linear-gradient(135deg, #141013 0%, #1c0c10 100%);
+            border: 1px solid rgba(255, 30, 66, 0.2);
+            border-radius: 16px;
             padding: 20px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 25px rgba(255, 30, 66, 0.08);
         }
 
         .card-title {
             font-size: 11px;
-            color: #8888a0;
+            color: #a0888c;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .balance-val {
-            font-size: 36px;
-            font-weight: bold;
-            color: #ffca28;
+            font-size: 34px;
+            font-weight: 800;
+            color: #ff2a4d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-shadow: 0 0 15px rgba(255, 42, 77, 0.3);
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+        .ruble-eq {
+            font-size: 12px;
+            color: #706065;
+            margin-top: 4px;
+            font-weight: 600;
         }
 
-        .stat-card {
-            background: #16161e;
-            border: 1px solid #2a2a3a;
-            border-radius: 16px;
-            padding: 15px 10px;
+        .miner-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 0;
+        }
+
+        .ruby-btn {
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, #2a080f 0%, #120407 100%);
+            border-radius: 50%;
+            border: 4px solid rgba(255, 42, 77, 0.3);
+            box-shadow: 0 0 40px rgba(255, 42, 77, 0.2), inset 0 0 20px rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.08s ease, box-shadow 0.08s ease;
+        }
+
+        .ruby-btn:active {
+            transform: scale(0.92);
+            box-shadow: 0 0 20px rgba(255, 42, 77, 0.5);
+        }
+
+        .progress-container {
+            width: 100%;
+            background: #161214;
+            border-radius: 8px;
+            height: 8px;
+            overflow: hidden;
+            margin-top: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #8b0000, #ff2a4d);
+            width: 0%;
+            transition: width 0.2s ease;
+        }
+
+        .click-counter-text {
+            font-size: 11px;
+            color: #887075;
+            margin-top: 6px;
+            font-weight: 600;
             text-align: center;
         }
 
-        .stat-val {
-            font-size: 18px;
-            color: #fff;
-            margin-top: 5px;
-        }
-
-        #ad-btn {
-            background: transparent;
-            color: #a29bfe;
-            border: 1px solid #a29bfe;
-            border-radius: 18px;
-            padding: 18px;
-            font-size: 14px;
+        .withdraw-btn {
+            background: linear-gradient(135deg, #cc0029 0%, #ff2a4d 100%);
+            border: none;
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            box-shadow: 0 4px 20px rgba(255, 42, 77, 0.3);
+            transition: 0.2s;
+            text-align: center;
             width: 100%;
         }
 
-        #ad-btn:active {
-            background: rgba(162, 155, 254, 0.1);
-            transform: scale(0.98);
+        .section-box {
+            background: #120e11;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 14px;
         }
 
-        #ad-btn:disabled {
-            border-color: #444;
-            color: #555;
-            cursor: not-allowed;
-            transform: none;
+        .section-header {
+            font-size: 12px;
+            font-weight: 700;
+            color: #c0a8ad;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a1317;
+            padding: 10px 12px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255, 30, 66, 0.1);
+        }
+
+        .task-info div:first-child {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .task-info div:last-child {
+            font-size: 10px;
+            color: #ff2a4d;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .task-go-btn {
+            background: #ff2a4d;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
         }
 
         .status-text {
-            font-size: 10px;
-            color: #666;
+            font-size: 11px;
+            font-weight: 600;
+            color: #706065;
             text-align: center;
+            min-height: 15px;
+        }
+
+        /* Модальное окно предпросмотра вывода */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: #120e11;
+            border: 1px solid rgba(255, 42, 77, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            max-width: 340px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .modal-title {
+            font-size: 14px;
+            font-weight: 800;
+            text-align: center;
+            text-transform: uppercase;
+            color: #ff2a4d;
+        }
+
+        .networks-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .network-card {
+            background: #1a1317;
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .network-card.active {
+            border-color: #ff2a4d;
+            background: rgba(255, 42, 77, 0.05);
+        }
+
+        .network-icon-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .network-icon-row img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        .network-name {
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .modal-input {
+            width: 100%;
+            background: #1a1317;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 12px;
+            color: white;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .modal-input:focus {
+            border-color: #ff2a4d;
+        }
+
+        .preview-notice {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.4);
+            text-align: center;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .modal-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-cancel {
+            background: #1c1416;
+            color: #887075;
+        }
+
+        .btn-confirm {
+            background: #ff2a4d;
+            color: white;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- Баланс -->
-        <div class="card">
-            <div class="card-title">Текущий баланс</div>
-            <div id="balance" class="balance-val">0 ⭐</div>
-        </div>
-
-        <!-- Статистика -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="card-title">Просмотров всего</div>
-                <div id="total-views" class="stat-val">0</div>
+        
+        <div class="balance-card">
+            <div class="card-title">Баланс рубинов</div>
+            <div class="balance-val">
+                <span>💎</span>
+                <span id="balance">0</span>
             </div>
-            <div class="stat-card">
-                <div class="card-title">За сегодня</div>
-                <div id="today-views" class="stat-val">0</div>
+            <div class="ruble-eq" id="usd-eq">≈ $0.0000</div>
+        </div>
+
+        <div class="miner-area">
+            <div class="ruby-btn" onclick="tapRuby()">
+                <svg viewBox="0 0 100 100" width="100" height="100">
+                    <defs>
+                        <linearGradient id="rubyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#ff2a4d" />
+                            <stop offset="50%" stop-color="#cc0029" />
+                            <stop offset="100%" stop-color="#5a0010" />
+                        </linearGradient>
+                        <linearGradient id="facetTop" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#ff6b8b" stop-opacity="0.8"/>
+                            <stop offset="100%" stop-color="#ff2a4d" stop-opacity="0.2"/>
+                        </linearGradient>
+                    </defs>
+                    <polygon points="30,15 70,15 90,40 50,90 10,40" fill="url(#rubyGrad)" stroke="#ff6b8b" stroke-width="1.5"/>
+                    <polygon points="30,15 70,15 50,40" fill="url(#facetTop)"/>
+                    <polygon points="30,15 10,40 50,40" fill="#a80020" opacity="0.6"/>
+                    <polygon points="70,15 90,40 50,40" fill="#e60032" opacity="0.7"/>
+                    <polygon points="10,40 50,90 50,40" fill="#800015" opacity="0.8"/>
+                    <polygon points="90,40 50,90 50,40" fill="#b30024" opacity="0.7"/>
+                </svg>
+            </div>
+            <div style="width: 100%;">
+                <div class="progress-container">
+                    <div id="ad-progress" class="progress-bar"></div>
+                </div>
+                <div id="click-status" class="click-counter-text">До рекламы: 30 / 30</div>
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-title">Заработано с рекламы за всё время</div>
-            <div id="total-earned" class="stat-val" style="color: #ffca28;">0 ⭐</div>
+        <div id="status" class="status-text">Готов к майнингу</div>
+
+        <!-- Кнопка вывода доступна ВСЕГДА для предпросмотра -->
+        <button id="withdraw-btn" class="withdraw-btn" onclick="openWithdrawModal()">ВЫВЕСТИ СРЕДСТВА</button>
+
+        <div class="section-box">
+            <div class="section-header">Задания за рекламу</div>
+            
+            <div class="task-item">
+                <div class="task-info">
+                    <div>10 реклам (+100 💎)</div>
+                    <div id="ads-10-counter">Прогресс: 0 / 10</div>
+                </div>
+                <button class="task-go-btn" id="btn-task-10" onclick="startAdTask(10)">Смотреть</button>
+            </div>
+
+            <div class="task-item">
+                <div class="task-info">
+                    <div>30 реклам (+300 💎)</div>
+                    <div id="ads-30-counter">Прогресс: 0 / 30</div>
+                </div>
+                <button class="task-go-btn" id="btn-task-30" onclick="startAdTask(30)">Смотреть</button>
+            </div>
+
+            <div class="task-item">
+                <div class="task-info">
+                    <div>50 реклам (+500 💎)</div>
+                    <div id="ads-50-counter">Прогресс: 0 / 50</div>
+                </div>
+                <button class="task-go-btn" id="btn-task-50" onclick="startAdTask(50)">Смотреть</button>
+            </div>
         </div>
 
-        <!-- Кнопка -->
-        <button id="ad-btn" onclick="startAd()">СМОТРЕТЬ РЕКЛАМУ</button>
-        <div id="status" class="status-text">Готов к запуску</div>
+    </div>
+
+    <!-- Модальное окно вывода (Предпросмотр) -->
+    <div id="withdraw-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-title">Вывод средств</div>
+            
+            <div class="networks-grid">
+                <div class="network-card active" id="net-trc20" onclick="selectNetwork('trc20')">
+                    <div class="network-icon-row">
+                        <img src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=035" alt="USDT">
+                        <img src="https://cryptologos.cc/logos/tron-trx-logo.svg?v=035" alt="TRX">
+                    </div>
+                    <div class="network-name">USDT TRC20</div>
+                </div>
+                
+                <div class="network-card" id="net-ton" onclick="selectNetwork('ton')">
+                    <div class="network-icon-row">
+                        <img src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=035" alt="USDT">
+                        <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg?v=035" alt="TON">
+                    </div>
+                    <div class="network-name">USDT TON</div>
+                </div>
+            </div>
+
+            <input type="text" id="wallet-input" class="modal-input" placeholder="Введите адрес кошелька...">
+            
+            <input type="number" id="amount-input" class="modal-input" placeholder="Сумма для вывода" oninput="calcWithdrawUsd(this.value)">
+            <div class="ruble-eq" id="modal-usd-calc" style="text-align: center; font-size: 11px;">Вы получите: $0.00</div>
+
+            <div class="preview-notice">
+                ⚠️ Режим предпросмотра: функционал вывода находится в разработке и временно недоступен.
+            </div>
+
+            <div class="modal-btns">
+                <button class="modal-btn btn-cancel" onclick="closeWithdrawModal()">Закрыть</button>
+                <button class="modal-btn btn-confirm" onclick="submitWithdraw()">Запросить</button>
+            </div>
+        </div>
     </div>
 
     <script>
         const AdController = window.Adsgram.init({ blockId: "29401" });
 
-        // Данные
-        let balance = Number(localStorage.getItem('user_balance')) || 0;
-        let totalViews = Number(localStorage.getItem('total_views')) || 0;
-        let totalEarned = Number(localStorage.getItem('total_earned')) || 0;
+        let balance = Number(localStorage.getItem('ruby_balance')) || 0;
+        let clicksBeforeAd = Number(localStorage.getItem('ruby_clicks')) || 0;
         
-        // Проверка сброса дневных просмотров
-        const todayKey = 'today_views_' + new Date().toISOString().slice(0, 10);
-        let todayViews = Number(localStorage.getItem(todayKey)) || 0;
+        let ads10Count = Number(localStorage.getItem('ads_10_count')) || 0;
+        let ads30Count = Number(localStorage.getItem('ads_30_count')) || 0;
+        let ads50Count = Number(localStorage.getItem('ads_50_count')) || 0;
+
+        const CLICK_TARGET = 30;
+        let selectedNetwork = 'trc20';
 
         function updateUI() {
-            document.getElementById('balance').innerText = balance.toLocaleString() + ' ⭐';
-            document.getElementById('total-views').innerText = totalViews;
-            document.getElementById('today-views').innerText = todayViews;
-            document.getElementById('total-earned').innerText = totalEarned.toLocaleString() + ' ⭐';
+            document.getElementById('balance').innerText = balance.toLocaleString();
+            let usdValue = (balance * 0.0001).toFixed(4);
+            document.getElementById('usd-eq').innerText = `≈ $${usdValue}`;
+
+            let remaining = CLICK_TARGET - (clicksBeforeAd % CLICK_TARGET);
+            let percent = ((clicksBeforeAd % CLICK_TARGET) / CLICK_TARGET) * 100;
+            document.getElementById('ad-progress').style.width = percent + '%';
+            document.getElementById('click-status').innerText = `До рекламы: ${remaining} клик.`;
+
+            document.getElementById('ads-10-counter').innerText = `Прогресс: ${ads10Count} / 10`;
+            document.getElementById('ads-30-counter').innerText = `Прогресс: ${ads30Count} / 30`;
+            document.getElementById('ads-50-counter').innerText = `Прогресс: ${ads50Count} / 50`;
         }
 
         updateUI();
 
-        function startAd() {
-            const btn = document.getElementById('ad-btn');
-            const status = document.getElementById('status');
+        // Клик по рубину (с защитой через таймер как в твоем рабочем коде)
+        let lastClickTime = 0;
+        function tapRuby() {
+            let now = Date.now();
+            if (now - lastClickTime < 400) return; // Легкая защита от лютого спама
+            lastClickTime = now;
 
-            btn.disabled = true;
-            btn.innerText = "ЗАГРУЗКА...";
-            status.innerText = "Запрос рекламного блока...";
+            balance += 1;
+            clicksBeforeAd += 1;
+
+            localStorage.setItem('ruby_balance', balance);
+            localStorage.setItem('ruby_clicks', clicksBeforeAd);
+
+            updateUI();
+
+            if (clicksBeforeAd % CLICK_TARGET === 0) {
+                triggerAdForMining();
+            }
+        }
+
+        // Реклама за майнинг (по аналогии со старым рабочим кодом с таймером)
+        function triggerAdForMining() {
+            const status = document.getElementById('status');
+            status.innerText = "Загрузка обязательной рекламы...";
 
             AdController.show().then((result) => {
                 if (result.done) {
-                    balance += 1000;
-                    totalViews += 1;
-                    todayViews += 1;
-                    totalEarned += 1000;
-
-                    localStorage.setItem('user_balance', balance);
-                    localStorage.setItem('total_views', totalViews);
-                    localStorage.setItem(todayKey, todayViews);
-                    localStorage.setItem('total_earned', totalEarned);
-
+                    balance += 1;
+                    localStorage.setItem('ruby_balance', balance);
                     updateUI();
-                    status.innerText = "Успешно! +1000 ⭐";
+                    status.innerText = "Реклама просмотрена! +1 рубин";
                 } else {
                     status.innerText = "Реклама была закрыта";
                 }
             }).catch((err) => {
                 console.error(err);
                 status.innerText = "Ошибка загрузки рекламы";
-            }).finally(() => {
-                runCooldown(10);
             });
         }
 
-        function runCooldown(sec) {
-            const btn = document.getElementById('ad-btn');
+        // Универсальная функция рекламных заданий (как в старом чистом коде)
+        function startAdTask(targetCount) {
+            let currentCount = targetCount === 10 ? ads10Count : (targetCount === 30 ? ads30Count : ads50Count);
+            if (currentCount >= targetCount) {
+                alert("✅ Задание уже выполнено!");
+                return;
+            }
+
             const status = document.getElementById('status');
-            let left = sec;
+            status.innerText = `Запрос ролика (${currentCount + 1}/${targetCount})...`;
 
-            const timer = setInterval(() => {
-                btn.innerText = `ПАУЗА (${left}с)`;
-                left--;
+            AdController.show().then((result) => {
+                if (result.done) {
+                    if (targetCount === 10) {
+                        ads10Count++;
+                        localStorage.setItem('ads_10_count', ads10Count);
+                        if (ads10Count >= 10) { balance += 100; alert("🎉 Задание выполнено! +100 💎"); }
+                    } else if (targetCount === 30) {
+                        ads30Count++;
+                        localStorage.setItem('ads_30_count', ads30Count);
+                        if (ads30Count >= 30) { balance += 300; alert("🎉 Задание выполнено! +300 💎"); }
+                    } else if (targetCount === 50) {
+                        ads50Count++;
+                        localStorage.setItem('ads_50_count', ads50Count);
+                        if (ads50Count >= 50) { balance += 500; alert("🎉 Задание выполнено! +500 💎"); }
+                    }
 
-                if (left < 0) {
-                    clearInterval(timer);
-                    btn.disabled = false;
-                    btn.innerText = "СМОТРЕТЬ РЕКЛАМУ";
-                    status.innerText = "Готов к запуску";
+                    localStorage.setItem('ruby_balance', balance);
+                    updateUI();
+                    status.innerText = "Ролик засчитан!";
+                } else {
+                    status.innerText = "Реклама была закрыта";
                 }
-            }, 1000);
+            }).catch((err) => {
+                console.error(err);
+                status.innerText = "Ошибка загрузки рекламы";
+            });
+        }
+
+        // Модальное окно вывода (предпросмотр)
+        function openWithdrawModal() {
+            document.getElementById('withdraw-modal').style.display = 'flex';
+            document.getElementById('amount-input').value = balance;
+            calcWithdrawUsd(balance);
+        }
+
+        function closeWithdrawModal() {
+            document.getElementById('withdraw-modal').style.display = 'none';
+        }
+
+        function selectNetwork(net) {
+            selectedNetwork = net;
+            document.getElementById('net-trc20').classList.toggle('active', net === 'trc20');
+            document.getElementById('net-ton').classList.toggle('active', net === 'ton');
+        }
+
+        function calcWithdrawUsd(val) {
+            let amount = Number(val) || 0;
+            let usd = (amount * 0.0001).toFixed(2);
+            document.getElementById('modal-usd-calc').innerText = `Сеть: ${selectedNetwork.toUpperCase()} | Вы получите: $${usd}`;
+        }
+
+        function submitWithdraw() {
+            let wallet = document.getElementById('wallet-input').value.trim();
+            if (!wallet) {
+                alert("Введите адрес кошелька!");
+                return;
+            }
+            alert("⚠️ Режим предпросмотра: Заявка создана (симуляция).");
+            closeWithdrawModal();
         }
     </script>
 </body>
