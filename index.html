@@ -2,581 +2,448 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Ruby Miner</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ruby Quiz</title>
+    <!-- Подключаем шрифт Unbounded Bold / Montserrat для крутого стиля -->
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Официальный скрипт Adsgram SDK -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-
     <style>
         * {
             box-sizing: border-box;
-            font-family: 'Montserrat', sans-serif;
-            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
             user-select: none;
+            font-family: 'Montserrat', sans-serif;
         }
-
         body {
-            background-color: #08080a;
+            background-color: #0b0910;
             color: #ffffff;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 380px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .balance-card {
-            background: linear-gradient(135deg, #141013 0%, #1c0c10 100%);
-            border: 1px solid rgba(255, 30, 66, 0.2);
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 8px 25px rgba(255, 30, 66, 0.08);
-        }
-
-        .card-title {
-            font-size: 11px;
-            color: #a0888c;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 6px;
-        }
-
-        .balance-val {
-            font-size: 34px;
-            font-weight: 800;
-            color: #ff2a4d;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-shadow: 0 0 15px rgba(255, 42, 77, 0.3);
-        }
-
-        .ruble-eq {
-            font-size: 12px;
-            color: #706065;
-            margin-top: 4px;
-            font-weight: 600;
-        }
-
-        .miner-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 10px 0;
-        }
-
-        .ruby-btn {
-            width: 160px;
-            height: 160px;
-            background: radial-gradient(circle, #2a080f 0%, #120407 100%);
-            border-radius: 50%;
-            border: 4px solid rgba(255, 42, 77, 0.3);
-            box-shadow: 0 0 40px rgba(255, 42, 77, 0.2), inset 0 0 20px rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform 0.08s ease, box-shadow 0.08s ease;
-        }
-
-        .ruby-btn:active {
-            transform: scale(0.92);
-            box-shadow: 0 0 20px rgba(255, 42, 77, 0.5);
-        }
-
-        .progress-container {
-            width: 100%;
-            background: #161214;
-            border-radius: 8px;
-            height: 8px;
-            overflow: hidden;
-            margin-top: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #8b0000, #ff2a4d);
-            width: 0%;
-            transition: width 0.2s ease;
-        }
-
-        .click-counter-text {
-            font-size: 11px;
-            color: #887075;
-            margin-top: 6px;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .withdraw-btn {
-            background: linear-gradient(135deg, #cc0029 0%, #ff2a4d 100%);
-            border: none;
-            color: white;
-            padding: 16px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 15px;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(255, 42, 77, 0.3);
-            transition: 0.2s;
-            text-align: center;
-            width: 100%;
-        }
-
-        .section-box {
-            background: #120e11;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 14px;
-            padding: 14px;
-        }
-
-        .section-header {
-            font-size: 12px;
-            font-weight: 700;
-            color: #c0a8ad;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-
-        .task-item {
-            display: flex;
             justify-content: space-between;
-            align-items: center;
-            background: #1a1317;
-            padding: 10px 12px;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            border: 1px solid rgba(255, 30, 66, 0.1);
+            min-height: 100vh;
+            padding: 15px;
+            overflow-x: hidden;
         }
-
-        .task-info div:first-child {
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .task-info div:last-child {
+        /* Счетчики рекламы в углу */
+        .ad-counter-badge {
+            position: absolute;
+            top: 12px;
+            right: 15px;
             font-size: 10px;
-            color: #ff2a4d;
-            font-weight: 600;
+            color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: right;
+        }
+        
+        .header {
+            text-align: center;
+            margin-top: 25px;
+            width: 100%;
+            position: relative;
+        }
+        .title {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #ff3366, #ff6b8b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        .balance-card {
+            background: linear-gradient(145deg, #151120, #0f0c17);
+            border: 1px solid rgba(255, 51, 102, 0.2);
+            border-radius: 16px;
+            padding: 12px 20px;
+            display: inline-block;
+            box-shadow: 0 8px 25px rgba(255, 51, 102, 0.1);
+        }
+        .balance-value {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 22px;
+            color: #fff;
+        }
+        .balance-usd {
+            font-size: 12px;
+            color: #8c859b;
             margin-top: 2px;
         }
 
-        .task-go-btn {
-            background: #ff2a4d;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
+        /* Навигация по режимам */
+        .modes-nav {
+            display: flex;
+            gap: 6px;
+            width: 100%;
+            max-width: 380px;
+            margin: 15px 0;
         }
-
-        .status-text {
-            font-size: 11px;
+        .mode-btn {
+            flex: 1;
+            background: #14101f;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #8c859b;
+            padding: 10px 4px;
+            border-radius: 12px;
+            font-size: 12px;
             font-weight: 600;
-            color: #706065;
-            text-align: center;
-            min-height: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .mode-btn.active {
+            background: linear-gradient(135deg, #ff3366, #e60039);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.3);
         }
 
-        /* Модальное окно предпросмотра вывода */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            padding: 20px;
-        }
-
-        .modal-card {
-            background: #120e11;
-            border: 1px solid rgba(255, 42, 77, 0.3);
-            border-radius: 16px;
+        /* Игровая зона */
+        .game-container {
+            background: #120e1b;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
             padding: 20px;
             width: 100%;
-            max-width: 340px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-        }
-
-        .modal-title {
-            font-size: 14px;
-            font-weight: 800;
+            max-width: 380px;
             text-align: center;
-            text-transform: uppercase;
-            color: #ff2a4d;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin: auto 0;
+        }
+        .question-box {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e1dcf6;
+            line-height: 1.4;
+        }
+        .flag-display {
+            font-size: 55px;
+            margin-bottom: 10px;
         }
 
-        .networks-grid {
+        /* Варианты ответов */
+        .answers-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
-
-        .network-card {
-            background: #1a1317;
-            border: 2px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .answer-btn {
+            background: #1c162b;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #fff;
+            padding: 14px 10px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.15s ease;
+        }
+        .answer-btn:active {
+            transform: scale(0.96);
+            background: #ff3366;
+            border-color: #ff3366;
         }
 
-        .network-card.active {
-            border-color: #ff2a4d;
-            background: rgba(255, 42, 77, 0.05);
+        /* Кнопка выводанизу */
+        .footer-action {
+            width: 100%;
+            max-width: 380px;
+            margin-top: 15px;
         }
-
-        .network-icon-row {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 6px;
-        }
-
-        .network-icon-row img {
-            width: 20px;
-            height: 20px;
-            object-fit: contain;
-        }
-
-        .network-name {
-            font-size: 11px;
+        .withdraw-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #1c1729, #14101f);
+            border: 1px solid rgba(255, 51, 102, 0.3);
+            color: #ff3366;
+            padding: 14px;
+            border-radius: 14px;
             font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .withdraw-btn:active {
+            background: #ff3366;
+            color: #fff;
         }
 
+        /* Модальное окно вывода */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 100;
+        }
+        .modal-content {
+            background: #14101f;
+            border: 1px solid rgba(255, 51, 102, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            width: 100%;
+            max-width: 340px;
+            text-align: center;
+        }
+        .modal-title {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
         .modal-input {
             width: 100%;
-            background: #1a1317;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
+            background: #0b0910;
+            border: 1px solid rgba(255,255,255,0.1);
             padding: 12px;
-            color: white;
+            border-radius: 12px;
+            color: #fff;
             font-size: 13px;
+            margin-bottom: 15px;
             outline: none;
-        }
-
-        .modal-input:focus {
-            border-color: #ff2a4d;
-        }
-
-        .preview-notice {
-            font-size: 10px;
-            color: rgba(255, 255, 255, 0.4);
             text-align: center;
-            font-weight: 600;
-            line-height: 1.4;
         }
-
-        .modal-btns {
-            display: flex;
-            gap: 10px;
-            margin-top: 6px;
-        }
-
         .modal-btn {
-            flex: 1;
+            width: 100%;
+            background: linear-gradient(135deg, #ff3366, #e60039);
+            border: none;
+            color: #fff;
             padding: 12px;
-            border-radius: 10px;
+            border-radius: 12px;
             font-weight: 700;
+            cursor: pointer;
+        }
+        .close-modal {
+            margin-top: 10px;
+            background: transparent;
+            border: none;
+            color: #8c859b;
             font-size: 12px;
             cursor: pointer;
-            border: none;
-        }
-
-        .btn-cancel {
-            background: #1c1416;
-            color: #887075;
-        }
-
-        .btn-confirm {
-            background: #ff2a4d;
-            color: white;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        
-        <div class="balance-card">
-            <div class="card-title">Баланс рубинов</div>
-            <div class="balance-val">
-                <span>💎</span>
-                <span id="balance">0</span>
-            </div>
-            <div class="ruble-eq" id="usd-eq">≈ $0.0000</div>
-        </div>
-
-        <div class="miner-area">
-            <div class="ruby-btn" onclick="tapRuby()">
-                <svg viewBox="0 0 100 100" width="100" height="100">
-                    <defs>
-                        <linearGradient id="rubyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#ff2a4d" />
-                            <stop offset="50%" stop-color="#cc0029" />
-                            <stop offset="100%" stop-color="#5a0010" />
-                        </linearGradient>
-                        <linearGradient id="facetTop" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" stop-color="#ff6b8b" stop-opacity="0.8"/>
-                            <stop offset="100%" stop-color="#ff2a4d" stop-opacity="0.2"/>
-                        </linearGradient>
-                    </defs>
-                    <polygon points="30,15 70,15 90,40 50,90 10,40" fill="url(#rubyGrad)" stroke="#ff6b8b" stroke-width="1.5"/>
-                    <polygon points="30,15 70,15 50,40" fill="url(#facetTop)"/>
-                    <polygon points="30,15 10,40 50,40" fill="#a80020" opacity="0.6"/>
-                    <polygon points="70,15 90,40 50,40" fill="#e60032" opacity="0.7"/>
-                    <polygon points="10,40 50,90 50,40" fill="#800015" opacity="0.8"/>
-                    <polygon points="90,40 50,90 50,40" fill="#b30024" opacity="0.7"/>
-                </svg>
-            </div>
-            <div style="width: 100%;">
-                <div class="progress-container">
-                    <div id="ad-progress" class="progress-bar"></div>
-                </div>
-                <div id="click-status" class="click-counter-text">До рекламы: 30 / 30</div>
-            </div>
-        </div>
-
-        <div id="status" class="status-text">Готов к майнингу</div>
-
-        <!-- Кнопка вывода доступна ВСЕГДА для предпросмотра -->
-        <button id="withdraw-btn" class="withdraw-btn" onclick="openWithdrawModal()">ВЫВЕСТИ СРЕДСТВА</button>
-
-        <div class="section-box">
-            <div class="section-header">Задания за рекламу</div>
-            
-            <div class="task-item">
-                <div class="task-info">
-                    <div>10 реклам (+100 💎)</div>
-                    <div id="ads-10-counter">Прогресс: 0 / 10</div>
-                </div>
-                <button class="task-go-btn" id="btn-task-10" onclick="startAdTask(10)">Смотреть</button>
-            </div>
-
-            <div class="task-item">
-                <div class="task-info">
-                    <div>30 реклам (+300 💎)</div>
-                    <div id="ads-30-counter">Прогресс: 0 / 30</div>
-                </div>
-                <button class="task-go-btn" id="btn-task-30" onclick="startAdTask(30)">Смотреть</button>
-            </div>
-
-            <div class="task-item">
-                <div class="task-info">
-                    <div>50 реклам (+500 💎)</div>
-                    <div id="ads-50-counter">Прогресс: 0 / 50</div>
-                </div>
-                <button class="task-go-btn" id="btn-task-50" onclick="startAdTask(50)">Смотреть</button>
-            </div>
-        </div>
-
+    <!-- Счетчик просмотров рекламы в углу -->
+    <div class="ad-counter-badge" id="adCounterBadge">
+        Сегодня: 0<br>Всего: 0
     </div>
 
-    <!-- Модальное окно вывода (Предпросмотр) -->
-    <div id="withdraw-modal" class="modal-overlay">
-        <div class="modal-card">
-            <div class="modal-title">Вывод средств</div>
-            
-            <div class="networks-grid">
-                <div class="network-card active" id="net-trc20" onclick="selectNetwork('trc20')">
-                    <div class="network-icon-row">
-                        <img src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=035" alt="USDT">
-                        <img src="https://cryptologos.cc/logos/tron-trx-logo.svg?v=035" alt="TRX">
-                    </div>
-                    <div class="network-name">USDT TRC20</div>
-                </div>
-                
-                <div class="network-card" id="net-ton" onclick="selectNetwork('ton')">
-                    <div class="network-icon-row">
-                        <img src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=035" alt="USDT">
-                        <img src="https://cryptologos.cc/logos/toncoin-ton-logo.svg?v=035" alt="TON">
-                    </div>
-                    <div class="network-name">USDT TON</div>
-                </div>
-            </div>
+    <div class="header">
+        <div class="title">Ruby Quiz</div>
+        <div class="balance-card">
+            <div class="balance-value" id="balanceVal">0 💎</div>
+            <div class="balance-usd" id="usdVal">≈ $0.00</div>
+        </div>
+    </div>
 
-            <input type="text" id="wallet-input" class="modal-input" placeholder="Введите адрес кошелька...">
-            
-            <input type="number" id="amount-input" class="modal-input" placeholder="Сумма для вывода" oninput="calcWithdrawUsd(this.value)">
-            <div class="ruble-eq" id="modal-usd-calc" style="text-align: center; font-size: 11px;">Вы получите: $0.00</div>
+    <!-- Переключатель мини-игр -->
+    <div class="modes-nav">
+        <button class="mode-btn active" onclick="switchMode('quiz')">Викторина</button>
+        <button class="mode-btn" onclick="switchMode('math')">Математика</button>
+        <button class="mode-btn" onclick="switchMode('countries')">Страны</button>
+    </div>
 
-            <div class="preview-notice">
-                ⚠️ Режим предпросмотра: функционал вывода находится в разработке и временно недоступен.
-            </div>
+    <!-- Игровая карточка -->
+    <div class="game-container">
+        <div id="gameExtraVisual"></div>
+        <div class="question-box" id="questionText">Загрузка игры...</div>
+        <div class="answers-grid" id="answersGrid"></div>
+    </div>
 
-            <div class="modal-btns">
-                <button class="modal-btn btn-cancel" onclick="closeWithdrawModal()">Закрыть</button>
-                <button class="modal-btn btn-confirm" onclick="submitWithdraw()">Запросить</button>
-            </div>
+    <!-- Кнопка вывода -->
+    <div class="footer-action">
+        <button class="withdraw-btn" id="withdrawBtn" onclick="openWithdrawModal()">Вывод средств</button>
+    </div>
+
+    <!-- Модальное окно вывода -->
+    <div class="modal" id="withdrawModal">
+        <div class="modal-content">
+            <div class="modal-title">Вывод рубинов</div>
+            <p style="font-size: 12px; color: #8c859b; margin-bottom: 15px;">Мин. сумма: 10 000 монет ($1.00)</p>
+            <input type="text" class="modal-input" id="walletInput" placeholder="Введите ваш USDT кошелек (TON/TRC20)">
+            <button class="modal-btn" onclick="submitWithdraw()">Создать заявку</button>
+            <br>
+            <button class="close-modal" onclick="closeWithdrawModal()">Отмена</button>
         </div>
     </div>
 
     <script>
-        const AdController = window.Adsgram.init({ blockId: "29401" });
+        // Инициализация Adsgram Controller (Block ID твой прежний)
+        const adController = window.Adsgram ? window.Adsgram.init({ blockId: "29401" }) : null;
 
-        let balance = Number(localStorage.getItem('ruby_balance')) || 0;
-        let clicksBeforeAd = Number(localStorage.getItem('ruby_clicks')) || 0;
-        
-        let ads10Count = Number(localStorage.getItem('ads_10_count')) || 0;
-        let ads30Count = Number(localStorage.getItem('ads_30_count')) || 0;
-        let ads50Count = Number(localStorage.getItem('ads_50_count')) || 0;
+        // Данные игрока
+        let state = {
+            balance: parseInt(localStorage.getItem('rq_balance')) || 0,
+            adsToday: parseInt(localStorage.getItem('rq_ads_today')) || 0,
+            adsTotal: parseInt(localStorage.getItem('rq_ads_total')) || 0,
+            lastDay: localStorage.getItem('rq_last_day') || new Date().toDateString(),
+            actionsWithoutAd: 0,
+            nextAdTrigger: Math.floor(Math.random() * 3) + 3, // от 3 до 5 ответов до рекламы
+            cooldownUntil: parseInt(localStorage.getItem('rq_cooldown')) || 0
+        };
 
-        const CLICK_TARGET = 30;
-        let selectedNetwork = 'trc20';
+        // Проверка смены дня для счетчика
+        if (state.lastDay !== new Date().toDateString()) {
+            state.adsToday = 0;
+            state.lastDay = new Date().toDateString();
+            localStorage.setItem('rq_last_day', state.lastDay);
+            localStorage.setItem('rq_ads_today', 0);
+        }
+
+        let currentMode = 'quiz';
+        let currentProblem = null;
+
+        // Базы данных для игр
+        const quizBase = [
+            { q: "Какая планета ближе всего к Солнцу?", answers: ["Меркурий", "Венера", "Марс", "Земля"], correct: "Меркурий" },
+            { q: "Сколько бит в одном килобайте?", answers: ["8192", "1024", "1000", "4096"], correct: "8192" },
+            { q: "В каком году вышел первый iPhone?", answers: ["2007", "2005", "2009", "2010"], correct: "2007" },
+            { q: "Какая химическая формула воды?", answers: ["H2O", "CO2", "O2", "CH4"], correct: "H2O" },
+            { q: "Сколько континентов на Земле?", answers: ["6", "5", "7", "4"], correct: "6" }
+        ];
+
+        const countriesBase = [
+            { flag: "🇷🇺", name: "Россия", answers: ["Россия", "Украина", "Беларусь", "Казахстан"], correct: "Россия" },
+            { flag: "🇺🇸", name: "США", answers: ["Канада", "США", "Великобритания", "Австралия"], correct: "США" },
+            { flag: "🇯🇵", name: "Япония", answers: ["Китай", "Южная Корея", "Япония", "Вьетнам"], correct: "Япония" },
+            { flag: "🇩🇪", name: "Германия", answers: ["Франция", "Германия", "Италия", "Польша"], correct: "Германия" },
+            { flag: "🇫🇷", name: "Франция", answers: ["Испания", "Германия", "Франция", "Италия"], correct: "Франция" }
+        ];
 
         function updateUI() {
-            document.getElementById('balance').innerText = balance.toLocaleString();
-            let usdValue = (balance * 0.0001).toFixed(4);
-            document.getElementById('usd-eq').innerText = `≈ $${usdValue}`;
-
-            let remaining = CLICK_TARGET - (clicksBeforeAd % CLICK_TARGET);
-            let percent = ((clicksBeforeAd % CLICK_TARGET) / CLICK_TARGET) * 100;
-            document.getElementById('ad-progress').style.width = percent + '%';
-            document.getElementById('click-status').innerText = `До рекламы: ${remaining} клик.`;
-
-            document.getElementById('ads-10-counter').innerText = `Прогресс: ${ads10Count} / 10`;
-            document.getElementById('ads-30-counter').innerText = `Прогресс: ${ads30Count} / 30`;
-            document.getElementById('ads-50-counter').innerText = `Прогресс: ${ads50Count} / 50`;
+            document.getElementById('balanceVal').innerText = state.balance.toLocaleString() + ' 💎';
+            let usd = (state.balance / 10000).toFixed(2);
+            document.getElementById('usdVal').innerText = `≈ $${usd}`;
+            document.getElementById('adCounterBadge').innerHTML = `Сегодня: ${state.adsToday}<br>Всего: ${state.adsTotal}`;
+            
+            localStorage.setItem('rq_balance', state.balance);
+            localStorage.setItem('rq_ads_today', state.adsToday);
+            localStorage.setItem('rq_ads_total', state.adsTotal);
         }
 
-        updateUI();
+        function switchMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            generateNewTask();
+        }
 
-        // Клик по рубину (с защитой через таймер как в твоем рабочем коде)
-        let lastClickTime = 0;
-        function tapRuby() {
-            let now = Date.now();
-            if (now - lastClickTime < 400) return; // Легкая защита от лютого спама
-            lastClickTime = now;
+        function generateNewTask() {
+            document.getElementById('gameExtraVisual').innerHTML = '';
+            if (currentMode === 'quiz') {
+                let item = quizBase[Math.floor(Math.random() * quizBase.length)];
+                currentProblem = { text: item.q, answers: [...item.answers].sort(() => Math.random() - 0.5), correct: item.correct, reward: 10 };
+            } else if (currentMode === 'countries') {
+                let item = countriesBase[Math.floor(Math.random() * countriesBase.length)];
+                document.getElementById('gameExtraVisual').innerHTML = `<div class="flag-display">${item.flag}</div>`;
+                currentProblem = { text: "Какая это страна?", answers: [...item.answers].sort(() => Math.random() - 0.5), correct: item.correct, reward: 5 };
+            } else if (currentMode === 'math') {
+                currentProblem = generateMathTask();
+            }
+            renderTask();
+        }
 
-            balance += 1;
-            clicksBeforeAd += 1;
+        function generateMathTask() {
+            const ops = ['+', '-', '*'];
+            const op = ops[Math.floor(Math.random() * ops.length)];
+            let n1, n2, ans;
+            if (op === '+') { n1 = rnd(5, 30); n2 = rnd(2, 20); ans = n1 + n2; }
+            else if (op === '-') { n1 = rnd(15, 45); n2 = rnd(1, n1); ans = n1 - n2; }
+            else { n1 = rnd(2, 9); n2 = rnd(2, 9); ans = n1 * n2; }
 
-            localStorage.setItem('ruby_balance', balance);
-            localStorage.setItem('ruby_clicks', clicksBeforeAd);
+            let answers = [ans];
+            let offsets = [-3, -2, -1, 1, 2, 3].sort(() => Math.random() - 0.5);
+            for (let off of offsets) {
+                let w = ans + off;
+                if (w >= 0 && !answers.includes(w) && answers.length < 4) answers.push(w);
+            }
+            answers.sort(() => Math.random() - 0.5);
+            return { text: `${n1} ${op} ${n2} = ?`, answers: answers, correct: ans, reward: 5 };
+        }
 
+        function rnd(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+        function renderTask() {
+            document.getElementById('questionText').innerText = currentProblem.text;
+            let grid = document.getElementById('answersGrid');
+            grid.innerHTML = '';
+            currentProblem.answers.forEach(ans => {
+                let btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.innerText = ans;
+                btn.onclick = () => checkAnswer(ans);
+                grid.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected) {
+            if (selected == currentProblem.correct) {
+                state.balance += currentProblem.reward;
+            }
             updateUI();
+            
+            // Проверка на рекламу и кулдаун
+            state.actionsWithoutAd++;
+            if (state.actionsWithoutAd >= state.nextAdTrigger) {
+                checkAndShowAd();
+                state.actionsWithoutAd = 0;
+                state.nextAdTrigger = Math.floor(Math.random() * 3) + 3;
+            }
+            generateNewTask();
+        }
 
-            if (clicksBeforeAd % CLICK_TARGET === 0) {
-                triggerAdForMining();
+        // Проверка кулдауна и показ рекламы
+        function checkAndShowAd() {
+            let now = Date.now();
+            if (now < state.cooldownUntil) {
+                return; // Кулдаун еще идет (30-40 сек)
+            }
+
+            if (adController) {
+                adController.show().then((result) => {
+                    state.adsToday++;
+                    state.adsTotal++;
+                    // Устанавливаем кулдаун 35 секунд
+                    state.cooldownUntil = Date.now() + 35000;
+                    localStorage.setItem('rq_cooldown', state.cooldownUntil);
+                    updateUI();
+                }).catch((e) => {
+                    console.log("Ad error or skipped", e);
+                });
             }
         }
 
-        // Реклама за майнинг (по аналогии со старым рабочим кодом с таймером)
-        function triggerAdForMining() {
-            const status = document.getElementById('status');
-            status.innerText = "Загрузка обязательной рекламы...";
-
-            AdController.show().then((result) => {
-                if (result.done) {
-                    balance += 1;
-                    localStorage.setItem('ruby_balance', balance);
-                    updateUI();
-                    status.innerText = "Реклама просмотрена! +1 рубин";
-                } else {
-                    status.innerText = "Реклама была закрыта";
-                }
-            }).catch((err) => {
-                console.error(err);
-                status.innerText = "Ошибка загрузки рекламы";
-            });
-        }
-
-        // Универсальная функция рекламных заданий (как в старом чистом коде)
-        function startAdTask(targetCount) {
-            let currentCount = targetCount === 10 ? ads10Count : (targetCount === 30 ? ads30Count : ads50Count);
-            if (currentCount >= targetCount) {
-                alert("✅ Задание уже выполнено!");
-                return;
-            }
-
-            const status = document.getElementById('status');
-            status.innerText = `Запрос ролика (${currentCount + 1}/${targetCount})...`;
-
-            AdController.show().then((result) => {
-                if (result.done) {
-                    if (targetCount === 10) {
-                        ads10Count++;
-                        localStorage.setItem('ads_10_count', ads10Count);
-                        if (ads10Count >= 10) { balance += 100; alert("🎉 Задание выполнено! +100 💎"); }
-                    } else if (targetCount === 30) {
-                        ads30Count++;
-                        localStorage.setItem('ads_30_count', ads30Count);
-                        if (ads30Count >= 30) { balance += 300; alert("🎉 Задание выполнено! +300 💎"); }
-                    } else if (targetCount === 50) {
-                        ads50Count++;
-                        localStorage.setItem('ads_50_count', ads50Count);
-                        if (ads50Count >= 50) { balance += 500; alert("🎉 Задание выполнено! +500 💎"); }
-                    }
-
-                    localStorage.setItem('ruby_balance', balance);
-                    updateUI();
-                    status.innerText = "Ролик засчитан!";
-                } else {
-                    status.innerText = "Реклама была закрыта";
-                }
-            }).catch((err) => {
-                console.error(err);
-                status.innerText = "Ошибка загрузки рекламы";
-            });
-        }
-
-        // Модальное окно вывода (предпросмотр)
-        function openWithdrawModal() {
-            document.getElementById('withdraw-modal').style.display = 'flex';
-            document.getElementById('amount-input').value = balance;
-            calcWithdrawUsd(balance);
-        }
-
-        function closeWithdrawModal() {
-            document.getElementById('withdraw-modal').style.display = 'none';
-        }
-
-        function selectNetwork(net) {
-            selectedNetwork = net;
-            document.getElementById('net-trc20').classList.toggle('active', net === 'trc20');
-            document.getElementById('net-ton').classList.toggle('active', net === 'ton');
-        }
-
-        function calcWithdrawUsd(val) {
-            let amount = Number(val) || 0;
-            let usd = (amount * 0.0001).toFixed(2);
-            document.getElementById('modal-usd-calc').innerText = `Сеть: ${selectedNetwork.toUpperCase()} | Вы получите: $${usd}`;
-        }
-
+        // Модальное окно вывода
+        function openWithdrawModal() { document.getElementById('withdrawModal').style.display = 'flex'; }
+        function closeWithdrawModal() { document.getElementById('withdrawModal').style.display = 'none'; }
+        
         function submitWithdraw() {
-            let wallet = document.getElementById('wallet-input').value.trim();
-            if (!wallet) {
-                alert("Введите адрес кошелька!");
-                return;
-            }
-            alert("⚠️ Режим предпросмотра: Заявка создана (симуляция).");
-            closeWithdrawModal();
+            let wallet = document.getElementById('walletInput').value.trim();
+            if (wallet.length < 6) { alert('Введите корректный кошелек!'); return; }
+            if (state.balance < 10000) { alert('Недостаточно рубинов для вывода (мин. 10 000)'); return; }
+
+            // Диплинк в твоего бота для выводов
+            let withdrawUrl = `https://t.me/rubyminerwithdraw_bot?start=withdraw_${encodeURIComponent(wallet)}_${state.balance}`;
+            window.location.href = withdrawUrl;
         }
+
+        // Старт игры при загрузке
+        updateUI();
+        generateNewTask();
     </script>
 </body>
 </html>
